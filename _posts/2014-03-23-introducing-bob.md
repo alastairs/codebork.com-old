@@ -9,7 +9,6 @@ excerpt: !ruby/string:Sequel::SQL::Blob "Test Data Builders are awesome and you 
   a new library called [Bob](http://github.com/alastairs/BobTheBuilder) which replaces
   the need to write your own hand-rolled Test Data Builders with a generic solution
   that preserves the fluent syntax suggested by GOOS. \r\n"
-permalink: /2014/03/23/introducing-bob.html
 ---
 ## TL;DR
 
