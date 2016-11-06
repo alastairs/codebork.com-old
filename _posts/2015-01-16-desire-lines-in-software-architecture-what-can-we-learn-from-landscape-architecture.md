@@ -4,6 +4,7 @@ title: 'Desire Lines in software architecture: what can we learn from landscape 
 author: alastairs
 nid: 235
 created: 1421427946
+permalink: /2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html
 ---
 Before Christmas I was talking with <a href="https://twitter.com/theagilepirate">Simon</a> about an architectural approach we’d taken on a recent project. The aim of the project is to replace an existing WinForms user interface with a shiny new HTML and JavaScript version. Part of this involves making HTTP requests back to the “engine” of the product, a .NET application, and of course our chosen data format is JSON. To protect the HTML UI from changes made in the Engine, we decided to keep a separation between the models we transferred over HTTP (what we termed Data Models), and the models we used in the application (or, “Application Models”). The approach that we took had similarities with the concept of Desire Lines from landscape architecture, as described in <a href="http://www.amazon.co.uk/Practices-Scaling-Lean-Agile-Development/dp/0321636406"><em>Practices for Scaling Lean and Agile Development</em> by Larman and Vodde</a>. 
 <!--break-->
