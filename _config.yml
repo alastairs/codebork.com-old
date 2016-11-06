@@ -24,7 +24,7 @@ name: CodeBork
 paginate: 25
 paginate_path: "/posts/page/:num/"
 url: "http://codebork.com" # the base hostname & protocol for your site, e.g. http://example.com
-blog_theme: dark
+blog_theme: light 
 ga_analytics: # Add your GA Tracking Id
 rss_enabled: true # Change to false if not
 social: 
