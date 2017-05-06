@@ -5,8 +5,6 @@ author: alastairs
 created: 1494081968
 excerpt: "I've spent the last couple of days writing smoke tests for our application with [Typescript](https://typescriptlang.org/) and [CasperJS](http://casperjs.org/), and hit quite a bit of pain along the way, so I thought I'd share what I'd learned."
 ---
-# Fun with Typescript and CasperJS
-
 I've spent the last couple of days writing smoke tests for our application with [Typescript](https://typescriptlang.org/) and [CasperJS](http://casperjs.org/), and hit quite a bit of pain along the way, so I thought I'd share what I'd learned.
 
 CasperJS is a “navigation scripting and testing tool” that automates PhantomJS and SlimerJS, semi-headless implementations of Chrome and Firefox respectively. (Side note: If you can use ES7, take a look at ghostjs, which supports the new async/await syntax.)
