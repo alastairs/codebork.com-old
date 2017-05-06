@@ -55,3 +55,5 @@ The more well-versed in Typescript and JavaScript will probably have identified 
     this.casper.waitForSelector(this.OAUTH_AUTHORISATION_FORM)
 
 so I'm only including this for posterity 😀
+
+Now that these issues have been worked through, the stack is working quite nicely for me. There are some on-going problems with console output being dumped after `casperjs test` exits), but I suspect these are specific to the Windows console host. Bash on Ubuntu on Windows 10 works a little better — the console control sequences are more well-understood in this environment — but it seems as though the details of test output (including the PASS/FAIL status of each test) is lost somewhere. Hopefully these issues will be resolved in time.
