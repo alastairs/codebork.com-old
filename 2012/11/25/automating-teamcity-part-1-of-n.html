@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Automating TeamCity (Part 1 of n)</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Automating TeamCity (Part 1 of n)">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2012/11/25/automating-teamcity-part-1-of-n.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2012/11/25/automating-teamcity-part-1-of-n.html">
+  <meta name="twitter:title" content="Automating TeamCity (Part 1 of n)">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Automating TeamCity (Part 1 of n)</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                November 25, 2012
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  4 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>Recently at work I have been working on a project to build out a new TeamCity installation on a small farm of servers.  Having drawn some inspiration from <a href="http://www.twitter.com/stack72">Paul Stack</a>, I knew that leveraging a virtualised environment could buy us some big wins in automating many aspects of the new TeamCity environment.  This post begins a series of posts that will describe in some detail what I set out to achieve, why, and how I did so.</p>
+
+<h2 id="motivation">Motivation</h2>
+
+<p>At work, we currently have a number of TeamCity installations, ranging from the very small to somewhat larger: our smallest installation consists of a TeamCity server and a build agent all installed on a single machine, whilst the largest consists of a TeamCity server on one machine and a mixture of physical and virtualised buildagents to a total of eight agents.  The initial motivation for the project was to consolidate these environments into a single larger environment to reduce administration overheads and remove silos of builds and their artefacts.</p>
+
+<p>I had previously done some work to create a Virtual Machine (VM) template for the build agents in our main TeamCity installation, with some success: setting up a new bulid agent from scratch used to be a day’s work, and with the VM template that time initially came down to 10 minutes or so.  Unfortunately, the template was a little fragile in the way it had been set up: for example., a PowerShell script that ran on boot would not always run, and the use of an answer file for Windows setup turned out to be a poor choice. Furthermore, over time the template only became more out of date as we made changes to our product and infrastructure, particularly in moving from Subversion to Git.  It was still much faster to create new build agents than it used to be, however, not least because we didn’t have to wait for an old developer machine to become available, and when we bought another five build agent licences a couple of months ago, I was able to get the new VMs set up from this template in a few days.</p>
+
+<p>We also wanted to set up a new domain on an isolated subnet for the new TeamCity infrastructure.  We have approximately 25000 tests in our main product, and sadly many of these are poor tests: in particular, there is a large number of tests that hit the underlying database for our product, and some hit the company’s Active Directory.  Coupled with the network problems we have historically suffered (thankfully now mostly resolved!), it is sadly not uncommon to see spurious test failures because some component of these system tests could not be contacted. By placing TeamCity on its own domain, isolated from high traffic of the main network, it is hoped that these tests will become more reliable.</p>
+
+<p>After talking with Paul months ago, and in feeling some of this pain, I realised that putting everything into the template was not a sensible decision, and something more configurable was required.  Paul had described how he had scripted the configuration of his build agents, to the extent that he could click “Run…” on a particular build configuration in TeamCity, and have a new build agent ready a few minutes later.  This sounded like a really cool thing to be able to do, and coupled with a requirement from my colleague <a href="http://www.twitter.com/adrianbanks">Adrian</a>, namely that we be able to regenerate the build agents on a weekly or monthly basis to keep them clean and free of cruft, Enter the power of automation.</p>
+
+<h2 id="the-plan">The Plan</h2>
+
+<p>A plan was forming in my mind.  Onto each of the five new servers we had bought for this purpose, I would install Citrix XenServer, an Enterprise-class Server Virtualisation product I was familiar with from my time working at Citrix.  The servers would be joined together into a pool so that VMs could freely move around them as necessary.  We would need some form of shared storage for the XenServer pool to store its VM templates.</p>
+
+<p>The VM templates themselves would be very slim: the minimum required software would be installed.  For a basic build agent, this meant Windows Server 2012 plus the TeamCity Build Agent software.  Further templates would be required for .NET 4.0 build agents and .NET 4.5 build agents, so that they could include the appropriate Windows and .NET SDKs.  I would be very strict about what could be installed onto a build agent template and what could not, and pretty much everything could not.</p>
+
+<p>Using the might of PowerShell, we would script the installation of dependent software onto a new build agent VM; Chocolatey (built on the popular NuGet package manager) would be of use here.  Ideally, we would script the configuration of the build agent machine as well: set the computer name, join it to the domain, and more.</p>
+
+<p>The final piece of the puzzle was TeamCity itself. We would need to set up a set of build configurations to automatically delete and re-create all the build agents currently running, and to allow for the creation of a single new build agent.  We would also use this as the NuGet package source for our custom Chocolatey packages.</p>
+
+<h3 id="list-of-tools-used">List of Tools Used</h3>
+
+<ul>
+  <li>Citrix XenServer 6.1 (free edition)</li>
+  <li>FreeNAS (shared templates over iSCSI)</li>
+  <li>Windows Server 2012</li>
+  <li>PowerShell 3.0</li>
+  <li>PowerShell SDK for Citrix XenServer 6.1</li>
+  <li>Chocolatey</li>
+  <li>and, of course, TeamCity</li>
+</ul>
+
+<h2 id="part-1-wrap-up">Part 1 Wrap-up</h2>
+
+<p>Hopefully this post has made clear the motivation for this project, and some of the requirements involved.  When we set out, I was confident that, although the end result sounded more than a little utopian, the goals could be achieved.  I’m glad to say that with a lot of research and tinkering, and hard work to get the bits working in production, it <em>is</em> possible to achieve that utopian state, and it’s pretty cool to see it happening.  The detail of the solution will be covered in future posts.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Automating TeamCity (Part 1 of n) - http://codebork.com/2012/11/25/automating-teamcity-part-1-of-n.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2012/11/25/automating-teamcity-part-1-of-n.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2012/11/25/automating-teamcity-part-1-of-n.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

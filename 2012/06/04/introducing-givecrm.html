@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Introducing GiveCRM</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Introducing GiveCRM">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2012/06/04/introducing-givecrm.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2012/06/04/introducing-givecrm.html">
+  <meta name="twitter:title" content="Introducing GiveCRM">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Introducing GiveCRM</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                June 4, 2012
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>Compulsory opening statement: It’s been a little while since I last blogged, and there’s a level of irony in that fact because now I have rather more to blog <em>about</em> than I did before.  In the last few months I’ve been working with a small handful of guys from my <a href="http://www.givecamp.org.uk/">GiveCampUK</a> team to launch <a href="http://www.givecrm.org.uk/">GiveCRM</a>.  Whilst we were all quite fired up to be working on it over the course of the GiveCampUK weekend, not everyone wanted to carry on with it beyond that event, and not everyone has had time to dedicate to it.  Such is the nature of open source, I guess.<br />
+<!--break-->
+## What is GiveCRM?</p>
+
+<p>GiveCRM is a Customer Relationship Management (CRM) system for charities and other non-profit organisations.  It has a focus on exceptional ease of use, and is designed explicitly for the needs of the non-profit sector.  Using GiveCRM, you can manage details of donors and other members of your organisation, record donations made, track campaigns to drive donations and see what donations resulted from which campaign.  <strong>Note:</strong> we do not enable accepting donations online, only the recording of the donated amount against a particular person.</p>
+
+<p>We’re building on ASP.NET MVC 3, with plans to move to MVC 4 in the near future.  The code is all C#, and we’ve used Twitter Bootstrap to develop v1 of our user interface, and Simple.Data to handle our data access.  We’re developing a Software-as-a-Service (SaaS) product with a monthly fee to cover our hosting costs, but we also provide a standalone version of the application for charities who need or wish to deploy a private instance.</p>
+
+<p>You can find and fork the source code on <a href="http://www.github.com/givecampuk/givecrm/">GitHub</a>.  Send us a Pull Request for one of our <a href="http://www.github.com/givecampuk/givecrm/issues">open bugs or features</a>.</p>
+
+<h2 id="why-are-you-blogging-about-this-now">Why are you blogging about this now?</h2>
+
+<p>Development has picked up again recently on the project, and we’ve hit a couple of interesting design points along the way.  Chief among these is our multi-tenancy strategy for the SaaS product, where we host multiple customers on one box.  I’ll be talking about these more in future posts.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Introducing GiveCRM - http://codebork.com/2012/06/04/introducing-givecrm.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2012/06/04/introducing-givecrm.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2012/06/04/introducing-givecrm.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

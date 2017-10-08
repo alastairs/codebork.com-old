@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | PowerShell -whatif</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="PowerShell -whatif">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2009/02/28/powershell-whatif.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2009/02/28/powershell-whatif.html">
+  <meta name="twitter:title" content="PowerShell -whatif">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>PowerShell -whatif</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                February 28, 2009
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>PowerShell is Microsoft’s new command line shell for Windows.  Version 1 was released in 2006, and version 2 has been in <abbr title="Community Technology Preview">CTP</abbr> for about a year now; it will finally RTM with Windows 7.  It’s a truly fantastic shell, and if you haven’t looked into it already, I would urge you to do so.  There’s a wealth of information out there, not least on <a href="http://blogs.msdn.com/powershell/">the PowerShell blog</a>, that will get you started very quickly.</p>
+
+<p>I’m such a fan of PowerShell that I’m quite surprised I haven’t posted about it here in any detail before.  One of the key advantages is that it is a first-class .NET language, giving you access to the entire .NET framework from the command-line; this arises from the basic data item being an object (rather than plain text as it is in UNIX shells).  I hope to post an introduction/tutorial to PowerShell sometime in the near future.</p>
+
+<p>The subject of this post, however, is a specific feature of PowerShell, the <code>-whatif</code> switch.  I assume familiarity with basic PowerShell features, and the PowerShell syntax.
+<!--break-->
+Recently at work, I was writing some PowerShell scripts to automate some XML manipulation.  Unfortunately, I got the script a bit wrong, and so the XML manipulation didn’t work as expected.  This could have been avoided had I not forgotten about <code>-whatif</code>.  Additionally, I was running the script in a sandbox location, which meant duplication of files and directory structure; this too could have been avoided if by using the -whatif switch.</p>
+
+<p><a href="http://computerperformance.co.uk/ezine/ezine157.htm" title="Ezine 157 - PowerShell's WhatIf">More of a magic shield than a magic bullet</a>, <strong><code>-whatif</code> does a dry run of your script</strong>.  Supplying <code>-whatif</code> to your command line runs the script <em>exactly as it would be run</em>, but without making any actual modifications.  As such, it is only valid on cmdlets that make modifications; supplying it to a get-* cmdlet will throw an error.</p>
+
+<p>What follows is a slightly contrived example, but bear with me :-)  Say my log directory (e.g., <code>C:\logs</code>) was getting a bit full and hard to manage, I might want to delete all old log files, where “old” means more than one week old.  The following code looks good, but there’s a not-so-subtle error in it.</p>
+
+<blockcode>
+Get-ChildItem -Filter *.log C:\logs |? { 
+    $_.LastWriteTime -gt (Get-Date).AddDays(-7) 
+} | Remove-Item
+</blockcode>
+
+<p>Running this one-liner (formatted to reduce scrolling) as-is will cause a huge screw-up: I’ve got the logic wrong for the date comparison, and suddenly I’ve deleted all my most recent log files.</p>
+
+<blockcode>
+Get-ChildItem -Filter *.log C:\logs |? { 
+    $_.LastWriteTime -gt (Get-Date).AddDays(-7) 
+} | Remove-Item -whatif
+</blockcode>
+
+<p>Adding that one flag does a dry-run, and gives me the following verbose output:</p>
+
+<blockcode>
+What if: Performing operation "Remove File" on Target "C:\logs\270209.log".
+</blockcode>
+
+<p>“Wait a minute”, I think, “that file is dated with today’s date.  I must have got the logic wrong!”  And so my ass and my log files are saved.  Flicking the comparison from a <code>-gt</code> to a <code>-lt</code> and leaving the <code>-whatif</code> switch enabled confirms my suspicions, and I now have the confidence to let PowerShell remove those old log files for me.</p>
+
+<p>This is a really important and useful switch, and if you write PowerShell artefacts (scripts, cmdlets, etc.) that you share with others, <strong>you really should support this switch</strong>.  <a href="http://blogs.msdn.com/powershell/archive/2007/02/25/supporting-whatif-confirm-verbose-in-scripts.aspx" title="Windows PowerShell Blog : Supporting -Whatif, -Confirm, -Verbose &mdash; In SCRIPTS!">And don’t forget to implement the other standard switches</a> while you’re at it.</p>
+
+<p>Now all I need to do is train myself to test out my PowerShell artefacts with this switch before I run them for real.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=PowerShell -whatif - http://codebork.com/2009/02/28/powershell-whatif.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2009/02/28/powershell-whatif.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2009/02/28/powershell-whatif.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

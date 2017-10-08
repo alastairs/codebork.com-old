@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Project Roslyn: .NET's Compiler as a Service</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Project Roslyn: .NET's Compiler as a Service">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/08/05/project-roslyn-nets-compiler-as-a-service.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/08/05/project-roslyn-nets-compiler-as-a-service.html">
+  <meta name="twitter:title" content="Project Roslyn: .NET's Compiler as a Service">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Project Roslyn: .NET's Compiler as a Service</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                August 5, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I spent some of this evening watching the video from Microsoft Research on their Project Roslyn, the codename for the Compiler-as-a-Service functionality they’re developing for .NET vFuture.<br />
+<!--break-->
+The most interesting parts of the talk for me were:</p>
+
+<ol>
+  <li>The C# and VB compilers are being completely re-written.  The compilers have been written, for the last 10+ years in C++, and have been black boxes that take in source code and spit out IL.  The Roslyn compilers are being written in <em>managed code</em>, in part to enable greater componentisation so that, for example, you can plug directly into the part of the compilation pipeline that most interests you.</li>
+  <li>Looking at the APIs Roslyn exposes, it seems like products like ReSharper will become much more easily implemented.  Will this introduce more competition into the refactoring tools market?  Maybe.  The Syntax Tree API (slides 19-23) looks very readable.</li>
+  <li>Anders Hejlsberg is lead architect of Roslyn.</li>
+  <li>A consideration is to release an open-source version of Roslyn to enable experimentation with your own new language features.  (There will be no support for extending or modifying the parser through the compiler APIs).</li>
+  <li>The kind of refactorings Roslyn will enable go way beyond the existing Rename Method and Extract Interface. Roslyn can enable refactorings that modify your code to, e.g., increase program security, or increase performance. These are things that would otherwise have to be designed into the program from the beginning.</li>
+</ol>
+
+<p>There’s also some interesting stuff on how people use refactoring tools.</p>
+
+<p>You can view the full video embedded below, or <a href="http://research.microsoft.com/apps/video/default.aspx?id=152281">with slides on Microsoft Research’s site.</a>  <a href="http://www.microsoft.com/getsilverlight/get-started/install/default.aspx?reason=unsupportedbrowser#">Silverlight</a> is required to view either.</p>
+
+<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="320" height="246"><param name="source" value="http://research.microsoft.com/apps/video/ClientBin/EmbeddedPlayer.xap" /><param name="enableHtmlAccess" value="true" /><param name="initParams" value="id=152281,start=0,end=4551" /><param name="background" value="white" /><param name="minRuntimeVersion" value="3.0.40818.0" /><param name="autoUpgrade" value="true" /><a href="http://go.microsoft.com/fwlink/?LinkID=149156&amp;v=3.0.40818.0" style="text-decoration:none"><img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style:none" /></a></object>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Project Roslyn: .NET's Compiler as a Service - http://codebork.com/2011/08/05/project-roslyn-nets-compiler-as-a-service.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/08/05/project-roslyn-nets-compiler-as-a-service.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/08/05/project-roslyn-nets-compiler-as-a-service.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

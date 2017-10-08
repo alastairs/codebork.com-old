@@ -1,20 +1,91 @@
----
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>{{ site.name | xml_escape }}</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
-    <link>{{ site.url }}</link>
-    <atom:link href="{{ site.url }}/{{ page.path }}" rel="self" type="application/rss+xml" />
-    {% for post in site.posts limit:10 %}
+    <title>CodeBork</title>
+    <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</description>
+    <link>http://codebork.com</link>
+    <atom:link href="http://codebork.com/feed.xml" rel="self" type="application/rss+xml" />
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.description | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ site.url }}{{ post.url }}</link>
-        <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
+        <title>Changes to the Cambridge Software Craftsmanship Community</title>
+        <description></description>
+        <pubDate>Sun, 08 Oct 2017 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2017/10/08/changes-to-the-software-craftsmanship-community.html</link>
+        <guid isPermaLink="true">http://codebork.com/2017/10/08/changes-to-the-software-craftsmanship-community.html</guid>
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Fun with Typescript and CasperJS</title>
+        <description></description>
+        <pubDate>Sat, 06 May 2017 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html</link>
+        <guid isPermaLink="true">http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html</guid>
+      </item>
+    
+      <item>
+        <title>The Anatomy of a Unit Test</title>
+        <description></description>
+        <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
+        <link>http://codebork.com/2016/12/07/anatomy-of-a-unit-test.html</link>
+        <guid isPermaLink="true">http://codebork.com/2016/12/07/anatomy-of-a-unit-test.html</guid>
+      </item>
+    
+      <item>
+        <title>Desire Lines in software architecture: what can we learn from landscape architecture?</title>
+        <description></description>
+        <pubDate>Fri, 16 Jan 2015 00:00:00 +0000</pubDate>
+        <link>http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html</link>
+        <guid isPermaLink="true">http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html</guid>
+      </item>
+    
+      <item>
+        <title>Updates to Bob, v0.2 released!</title>
+        <description></description>
+        <pubDate>Sat, 12 Apr 2014 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html</link>
+        <guid isPermaLink="true">http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html</guid>
+      </item>
+    
+      <item>
+        <title>Introducing Bob</title>
+        <description></description>
+        <pubDate>Sun, 23 Mar 2014 00:00:00 +0000</pubDate>
+        <link>http://codebork.com/2014/03/23/introducing-bob.html</link>
+        <guid isPermaLink="true">http://codebork.com/2014/03/23/introducing-bob.html</guid>
+      </item>
+    
+      <item>
+        <title>Software Craftsmanship, and Professionalism in Software</title>
+        <description></description>
+        <pubDate>Sat, 28 Sep 2013 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2013/09/28/software-craftsmanship-and-professionalism-in-software.html</link>
+        <guid isPermaLink="true">http://codebork.com/2013/09/28/software-craftsmanship-and-professionalism-in-software.html</guid>
+      </item>
+    
+      <item>
+        <title>A Plurality of Ideas: Contrasting Perspectives of Software Craftsmanship</title>
+        <description></description>
+        <pubDate>Fri, 27 Sep 2013 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2013/09/27/a-plurality-of-ideas-contrasting-perspectives-of-software-craftsmanship.html</link>
+        <guid isPermaLink="true">http://codebork.com/2013/09/27/a-plurality-of-ideas-contrasting-perspectives-of-software-craftsmanship.html</guid>
+      </item>
+    
+      <item>
+        <title>SoCraTes UK 2013</title>
+        <description></description>
+        <pubDate>Wed, 25 Sep 2013 00:00:00 +0100</pubDate>
+        <link>http://codebork.com/2013/09/25/socrates-uk-2013.html</link>
+        <guid isPermaLink="true">http://codebork.com/2013/09/25/socrates-uk-2013.html</guid>
+      </item>
+    
+      <item>
+        <title>Automating TeamCity (Part 2 of n): Automating XenServer</title>
+        <description></description>
+        <pubDate>Sun, 25 Nov 2012 00:00:00 +0000</pubDate>
+        <link>http://codebork.com/2012/11/25/automating-teamcity-part-2-of-n-automating-xenserver.html</link>
+        <guid isPermaLink="true">http://codebork.com/2012/11/25/automating-teamcity-part-2-of-n-automating-xenserver.html</guid>
+      </item>
+    
   </channel>
 </rss>

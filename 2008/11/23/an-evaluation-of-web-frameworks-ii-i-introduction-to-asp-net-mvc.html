@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | An Evaluation of Web Frameworks II.i: Introduction to ASP.NET MVC</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="An Evaluation of Web Frameworks II.i: Introduction to ASP.NET MVC">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/11/23/an-evaluation-of-web-frameworks-ii-i-introduction-to-asp-net-mvc.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/11/23/an-evaluation-of-web-frameworks-ii-i-introduction-to-asp-net-mvc.html">
+  <meta name="twitter:title" content="An Evaluation of Web Frameworks II.i: Introduction to ASP.NET MVC">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>An Evaluation of Web Frameworks II.i: Introduction to ASP.NET MVC</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                November 23, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  4 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>ASP.NET MVC is still only a beta, although it has only recently gained this status from the previous “Tech Preview” releases.  The rumour is that it will RTM as part of .NET 4.0.</p>
+
+<p>Despite the beta status, it has a pretty solid feel to it, and it’s obviously quite stable: <a href="http://www.stackoverflow.com">Stack Overflow</a> was developed with this framework.  It integrates well with VS 2008 Pro SP 1, and promotes the use of <a href="http://www.alastairsmith.me.uk/coding/2008/09/13/test-driven-development.html">Test-Driven Development</a>, primarily through Microsoft’s own Unit Testing framework (also known as MSTest).  However, it will support other frameworks such as my preferred <a href="http://www.nunit.org/">NUnit</a>.
+<!--break-->
+The first task I undertook was to get NUnit support for test projects integrated into VS 2008, mainly just to see how it was done.  A quick search on StackOverflow.com came up with <a href="http://stackoverflow.com/questions/21137/aspnet-mvc-and-nunit">this question</a> and after a bit of fiddling I’d managed to create myself the option of using NUnit over MSTest.  It was trickier than it probably should have been (including registry editing, yuck), but the blame, such as it is, should be laid at the door of NUnit as much as Microsoft.  I understand there are plans to include a VS 2008 template with NUnit 2.5, but I couldn’t find anything along these lines in the most recent alpha release.</p>
+
+<p>With that completed, I began work on the project itself.  With the ASP.NET MVC framework installed, it presents a new option in the Visual Studio “New Project” dialog box:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[img_assist</td>
+      <td>nid=60</td>
+      <td>title=Figure 1</td>
+      <td>desc=Creating a new web project from Visual Studio</td>
+      <td>link=none</td>
+      <td>align=center</td>
+      <td>width=450</td>
+      <td>height=306]</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[img_assist</td>
+      <td>nid=61</td>
+      <td>title=Figure 2</td>
+      <td>desc=Components of an ASP.NET MVC Solution</td>
+      <td>link=none</td>
+      <td>align=right</td>
+      <td>width=277</td>
+      <td>height=576]  Once the project is created (complete with Unit Test project), you end up with a Visual Studio solution with a number of folders and other items ready for use (see figure 2).  Let’s go through what we’ve got there.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Firstly, I’ll pick out the folders “Models”, “Views” and “Controllers”.  This being an <a href="http://www.codinghorror.com/blog/archives/001112.html">MVC</a> application, the division makes sense, and actually forces you think in those terms.  Under “Models” go your classes representing the data objects; you’ll see I’ve got classes to represent each of posts, users and comments.  “Views” stores the HTML, in this case as ASPX pages representing templates for the various models.  The “Controllers” are a little trickier, but ultimately all they do is apply the right view to the right model.  In “Controllers” is where the clever stuff happens in an MVC web site, the butler to the Models and their clothes, the Views.</p>
+
+<p>It’s also interesting to note that the default ASP.NET MVC project contains all the necessary workings for not just a homepage, but account management functionality (change password, register, and login) too.  In fact, you can hit F5 as soon as you’ve created the project and get a working website up in a browser, complete with (admittedly basic) CSS styling.  You do need to create an SQL Server database to get the account management functionality working off the bat.</p>
+
+<p>There are two “secondary” folders: “Content” and “Scripts”.  These are fairly self-explanatory: “Content” holds things like images, CSS files, etc., whilst “Scripts” holds your AJAX and other client-side script files.  It’s sad to note that the Beta release of ASP.NET MVC does not include the <a href="http://weblogs.asp.net/scottgu/archive/2008/11/21/jquery-intellisense-in-vs-2008.aspx">jQuery Intellisense</a> file by default, but maybe the <a href="http://weblogs.asp.net/scottgu/archive/2008/02/08/vs-2008-web-development-hot-fix-roll-up-available.aspx">hotfix</a> will resolve that.</p>
+
+<p>What I like about this explicit MVC approach is that it seems to do a good job of separating concerns as far as is possible.  MVC is an important pattern for the web, given the nature of the layers of presentation and business logic that these sorts of applications involve.  It’s got some traction at work, although we haven’t adopted it as fully as we’d like.  It’s very easy in web applications (more so than in desktop applications, it seems) to get the business logic horribly tangled up with the presentation which leads to unmaintainable code, so anything that improves on this situation can only be good.</p>
+
+<p>The Views (the .aspx files) can be mostly HTML with only the odd bit of C# (or VB if you prefer) to squirt in the necessary bit of data.  I don’t know if ASP.NET MVC supports this sort of thing natively, but certainly with the integration with ASP Dynamic Data, you shouldn’t even need to do loops to do things like displaying tables of information; instead, you just insert one or two lines of code and ASP will do the rest for you.  Complete with full paging support if required.  There’s a bit of (seemingly fairly standard) ASPX at the top of the Views’ files to refer to a master template/page, and ensure the</p>
+
+<p>The Models are just Plain Ol’ Objects, business objects in their most real sense.  My Post object, for example, contains properties that map directly to the fields in the database, constructors, and methods for manipulating their state.  They don’t need to concern themselves with how they save themselves to the database, or how to present themselves to the world at large.  They just <em>exist</em>.</p>
+
+<p>The Controllers, as I mentioned before, tie the Models and Views together, and manage external resources, like the database connection.  As such, they are the most complex bit of the application, but because they are separate from the Models and Views, they are much less complex than they might be.  Take, for example, the code to display the “Create Post” form:</p>
+<blockcode language="csharp">
+public ActionResult CreatePost()
+{
+    return View("CreatePost");
+}
+</blockcode>
+
+<p>That’s the framework covered… The next post will be on the actual implementation.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=An Evaluation of Web Frameworks II.i: Introduct... - http://codebork.com/2008/11/23/an-evaluation-of-web-frameworks-ii-i-introduction-to-asp-net-mvc.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/11/23/an-evaluation-of-web-frameworks-ii-i-introduction-to-asp-net-mvc.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/11/23/an-evaluation-of-web-frameworks-ii-i-introduction-to-asp-net-mvc.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

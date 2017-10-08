@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Fun with Typescript and CasperJS</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Fun with Typescript and CasperJS">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html">
+  <meta name="twitter:title" content="Fun with Typescript and CasperJS">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Fun with Typescript and CasperJS</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                May 6, 2017
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  5 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I’ve spent the last couple of days writing smoke tests for our application with <a href="https://typescriptlang.org/">Typescript</a> and <a href="http://casperjs.org/">CasperJS</a>, and hit quite a bit of pain along the way, so I thought I’d share what I’d learned.</p>
+
+<p>CasperJS is a “navigation scripting and testing tool” that automates PhantomJS and SlimerJS, semi-headless implementations of Chrome and Firefox respectively. (Side note: If you can use ES7, take a look at ghostjs, which supports the new async/await syntax.)</p>
+
+<p>The first thing was getting the development environment set up. I’d not done this for Typescript for a couple of years and a lot has changed in that time, so I decided to go from first principles. Most of the available tutorials say to install the tools globally with <code class="highlighter-rouge">npm install -g</code>, but I wanted to avoid having to install more things to our build agents. Here’s what I went with:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm install --save-dev typescript@2.3.2
+npm install --save-dev typings@2.1.1
+npm install --save-dev casperjs@1.1.3
+npm install --save-dev phantomjs-prebuilt@2.1.14
+</code></pre>
+</div>
+
+<p>If you’ve not come across it, Typings is a neat command-line tool for managing Typescript definitions. It can source typings from a range of places, including DefinitelyTyped and npm. The next step was to install the typings for Casper and Phantom:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>touch tsconfig.json
+typings install dt~casperjs
+typings install dt~phantomjs
+</code></pre>
+</div>
+
+<p>This will set up typings in <code class="highlighter-rouge">pwd</code> so be sure you run this from the desired root of your Typescript project (this is where <code class="highlighter-rouge">tsconfig.json</code> lives). You’ll also need the full path to your <code class="highlighter-rouge">node_modules\.bin</code> on your PATH. (The <code class="highlighter-rouge">dt~</code> prefix instructs Typings to obtain the type definitions from DefinitelyTyped as it defaults to npm.) You’ll now have a <code class="highlighter-rouge">typings</code> directory containing the type definitions and a <code class="highlighter-rouge">typings.json</code> file listing the installed typings. Note that Typings has modified the <code class="highlighter-rouge">tsconfig.json</code> to reference <code class="highlighter-rouge">typings/index.d.ts</code>: Typings controls this file to pull together all the type definitions it installs into a single place that can be easily referenced. <em>(Side note: each imported type definition specifies its own <code class="highlighter-rouge">index.d.ts</code> which is pulled into Typing’s <code class="highlighter-rouge">index.d.ts</code> with a series of <code class="highlighter-rouge">/// &lt;reference /&gt;</code> statements. Neato.)</em></p>
+
+<p>I also needed to configure my editor. VS Code is a great editor, and it comes with bundled support for Typescript, so it was a no-brainer to use this. The first thing I noticed was that it uses its bundled Typescript compiler, which was currently at version 2.2.2, but I had installed 2.3.2 (yesterday’s VS Code update bundles 2.3.2). Luckily, there’s <a href="https://code.visualstudio.com/docs/languages/typescript#_using-newer-typescript-versions">great documentation on how to achieve this</a> (TL;DR: set <code class="highlighter-rouge">typescript.tsdk</code> in your workspace settings to the appropriate path). There’s also a great <a href="https://code.visualstudio.com/docs/languages/typescript">tutorial on the VS Code site</a> which details how to set up VS Code for a nicer editing experience, including hooking up the Typescript compiler to the <code class="highlighter-rouge">Ctrl+Shift+B</code> task runner command. I use a slightly different set of arguments to <code class="highlighter-rouge">tsc</code> to add compile-on-save support, so my <code class="highlighter-rouge">tasks.json</code> looks like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="err">//</span><span class="w"> </span><span class="err">See</span><span class="w"> </span><span class="err">https://go.microsoft.com/fwlink/?LinkId=733558</span><span class="w">
+    </span><span class="err">//</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">documentation</span><span class="w"> </span><span class="err">about</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">tasks.json</span><span class="w"> </span><span class="err">format</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1.0"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"isShellCommand"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"-w"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-p"</span><span class="p">,</span><span class="w"> </span><span class="s2">"test/smoketests"</span><span class="p">],</span><span class="w">
+    </span><span class="nt">"showOutput"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"isBackground"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"problemMatcher"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$tsc-watch"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Great, we’re finally ready to go!</p>
+
+<hr />
+
+<p>I started writing my Casper tests, following <a href="http://jsebfranck.blogspot.co.uk/2014/03/page-object-pattern-with-casperjs.html">this excellent post</a> on using the Page Object pattern with Casper. It was here that I hit my first issue: when running the tests, PhantomJS would complain that the <code class="highlighter-rouge">exports</code> variable could not be found. After a lot of fruitless searching through Stack Overflow and GitHub, I found that Typescript was outputting a line in my page object akin to <code class="highlighter-rouge">Object.defineProperty(exports, /*..*/)</code> and this was what was causing Phantom to baulk. I resolved this by down-grading to Typescript 2.1.4 instead, as this version was known to work from a previous project. Annoyingly, and as with a lot of the problems I’ve hit with Typescript and co. this week, I’m no longer able to reproduce the problem.</p>
+
+<p>Another issue was in calling Casper’s <code class="highlighter-rouge">evaluate()</code> function. This can be a little tricky to understand as it passes a closure to PhantomJS to execute in the context of the current page’s DOM. It’s particularly useful in conjunction with the waitFor() function. I was using it to query a CSS selector (before I found the handy <code class="highlighter-rouge">waitForSelector()</code> function!), where the selector was an instance member of my page object. Something like this (line 18 is the key):</p>
+
+<script src="https://gist.github.com/alastairs/6c3b1ce626d5bbeee6f0757be1a36a4c.js"></script>
+
+<p>The more well-versed in Typescript and JavaScript will probably have identified that the closure can’t access the instance variable of the class, as (I <em>think</em>) <code class="highlighter-rouge">this</code> doesn’t refer to the class instance anymore, but (I <em>think</em>) the calling context of the lambda function. Pulling it out as a globally-defined constant works, of course, as does passing it as a parameter to the closure supplied in <code class="highlighter-rouge">evaluate()</code>. Of course the whole thing can be collapsed to the much more simple</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>this.casper.waitForSelector(this.OAUTH_AUTHORISATION_FORM)
+</code></pre>
+</div>
+
+<p>so I’m only including this for posterity 😀</p>
+
+<p>Now that these issues have been worked through, the stack is working quite nicely for me. There are some on-going problems with console output being dumped after <code class="highlighter-rouge">casperjs test</code> exits), but I suspect these are specific to the Windows console host. Bash on Ubuntu on Windows 10 works a little better — the console control sequences are more well-understood in this environment — but it seems as though the details of test output (including the PASS/FAIL status of each test) is lost somewhere. Hopefully these issues will be resolved in time.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Fun with Typescript and CasperJS - http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2017/05/06/fun-with-typescript-and-casperjs.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

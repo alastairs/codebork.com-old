@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Code Kata: Supermarket Pricing</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Code Kata: Supermarket Pricing">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/05/15/code-kata-supermarket-pricing.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/05/15/code-kata-supermarket-pricing.html">
+  <meta name="twitter:title" content="Code Kata: Supermarket Pricing">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Code Kata: Supermarket Pricing</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                May 15, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  5 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>So this afternoon I’ve been attempting the first of The Pragmatic Programmers’ kata.  This is a modelling-only exercise, designed to get you thinking around a problem. You’ll need to be familiar with the kata in order to get the most out of this post, so I’ll go get a cup of tea whilst you <a href="http://codekata.pragprog.com/2007/01/code_kata_one_s.html">go read up on it</a>.
+<!--break-->
+Ok, now that you’re more familiar with the kata and I’m adeqately refreshed, let’s take a look at this thing.  I’ve come up with two approaches for your critique, and I suspect there’s a better one just out of my reach.</p>
+
+<h3>Solution 1: a simplistic solution</h3>
+
+<p>Assuming we have a class called <code>Product</code>, it has one field called <code>Price</code>.  This solution essentially assumes that the actual price of an item changes when its put on offer.  For example, the can of beans at £0.65 becomes £0.33 per can when placed on a 3 for £1 offer; as a result of this, fractional money is permitted in this model to ensure correct rounding (so a single can is actually 33.3333…p recurring, not £0.33); without fractional money, products must have unequal pricing to make up for rounding errors (such as two cans at £0.33 and one at £0.34).</p>
+
+<p>This obviously leads us into a number of potential problems.  For example, all cans are now on sale on the offer price, no matter what quantity you purchase them in; furthermore, the shelf of 100 cans is now valued at £33.33, whereas it might be better for the supermarket to continue to value that shelf at the full £65.</p>
+
+<p>Equally, this approach doesn’t work for items priced by quantity, such as loose strawberries priced at £1.99/kilo.  Is the price £1.99?  Do you then sell, for example, a quarter of a product priced accordingly?</p>
+
+<p>Buy-2-get-1-free can only work here if you calculate the price of a can as (£0.65 * 2)/3, in which case you are again changing the price of all cans on sale, no matter whether the customer buys 1 or follows the “rules” of the offer.</p>
+
+<p>I think rounding wouldn’t need to happen, as fractional money is permitted by the model.  However, once the prices have all been resolved, they would need to be rounded to the usual whole penny.</p>
+
+<h3>Solution 2: a better (?) solution</h3>
+
+<p>The first solution could use some improvement.  For starters, the fractional money doesn’t model the real world: no one carries around 0.5p any more, let alone 0.3333…p.  My second attempt sees the <code>Product</code> class expose two price fields: the base price (i.e., the standard retail price), and the offer price.</p>
+
+<p>In the 3-for-a-pound scenario, the base price remains at £0.65 (this is fixed for the product) and the offer price is set to £0.33.  Rounding happens when setting the offer price.  The solves the problem of purchasing 4 cans in the offer, as you can calculate that the correct price is (offer price * 3) + base price.  <em>Or is it?</em>  In actual fact, the enforced rounding requires compensation: it should actually be ((offer price * 3) + £0.01) + base price.  An audit log would be needed to ensure that this was functioning correctly!</p>
+
+<p>In the buy-2-get-1-free scenario, it becomes very difficult to work out what the offer price should be.  The best I could come up with was ((base price * 2)/3), which would be appropriately rounded (and again would need to be compensated for).</p>
+
+<p>This model is equivalent to the previous one for the strawberries.  The price per kilo is set as the base price, and is resolved at the point of sale.</p>
+
+<p>However, in its favour, the shelf of 100 cans of beans is now deemed to be worth the full £65 again, and fractional money is not permitted by the model.</p>
+
+<p>So, this improves only slightly on the simplistic model, and all those extra pennies being added in feels a bit like the <a href="http://en.wikipedia.org/wiki/Deferent_and_epicycle" title="Deferent and Epicycle">epicycles</a> of old.  Additionally, they’re obviously a recipe for disaster.</p>
+
+<h3>Solution 3: the "Enterprise" solution</h3>
+
+<p>The idea with this solution is to add in an external service to handle the responsibilities of calculating and administering the offers. So, a <code>Product</code> now has a flag to indicate whether or not it is a discrete item (such as a can of beans) or sold by quantity (such as loose strawberries). A <code>PriceManager</code> takes a <code>Product</code> and a quantity and resolves that to a price, e.g., for one can of beans, it would return £0.65; for 300g of strawberries priced at £1.99/kilo, it would return £0.60.  Rounding takes place within the <code>PriceManager</code>, and is calculated to the nearest penny.  The <code>PriceManager</code> calls an <code>OfferManager</code> to resolve any special offers applicable.  The <code>OfferManager</code> returns to the <code>PriceManager</code> an method for calculating the offer for that product.  Until the offer is satisfied, the <code>PriceManager</code> continues to return the standard retail price for the item (e.g., £0.65 for a can of beans), and when the offer rule is completely matched, the final item in the offer makes up the difference in price.</p>
+
+<p>So, for three cans of beans for £1, the <code>PriceManager</code> obtains an <code>Offer</code> stating that it requires three cans of beans.  The <code>PriceManager</code> returns £0.65 for the first two cans and -£0.95 for the third.  It will continue doing this for as many cans of beans as are purchased by the customer, thereby correctly charging the customer for the beans</p>
+
+<p>In the buy two get one free offer, the <code>PriceManager</code> again obtains an <code>Offer</code> stating that it requires three cans of beans, and again returns £0.65 for the first two cans.  For the third can, it returns £0.00.  As before, it will continue doing this for as many cans of beans as are purchased by the customer, correctly applying the order.</p>
+
+<p>Finally, it separates the ideas of cost and price, so that the shelf of 100 cans of beans is still valued at £0.65 for stock costing purposes, even though it will be sold at a lower price.</p>
+
+<h3>Conclusion</h3>
+
+<p>I think solution 3 is the most “correct”, in terms of addressing the problem domain, but it seems really heavyweight (hence the title).  I welcome your feedback on these models, and would be interested to hear your own ideas on how to approach them.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Code Kata: Supermarket Pricing - http://codebork.com/2011/05/15/code-kata-supermarket-pricing.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/05/15/code-kata-supermarket-pricing.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/05/15/code-kata-supermarket-pricing.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

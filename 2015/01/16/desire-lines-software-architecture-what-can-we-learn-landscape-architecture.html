@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Desire Lines in software architecture: what can we learn from landscape architecture?</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Desire Lines in software architecture: what can we learn from landscape architecture?">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html">
+  <meta name="twitter:title" content="Desire Lines in software architecture: what can we learn from landscape architecture?">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Desire Lines in software architecture: what can we learn from landscape architecture?</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                January 16, 2015
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  4 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>Before Christmas I was talking with <a href="https://twitter.com/theagilepirate">Simon</a> about an architectural approach we’d taken on a recent project. The aim of the project is to replace an existing WinForms user interface with a shiny new HTML and JavaScript version. Part of this involves making HTTP requests back to the “engine” of the product, a .NET application, and of course our chosen data format is JSON. To protect the HTML UI from changes made in the Engine, we decided to keep a separation between the models we transferred over HTTP (what we termed Data Models), and the models we used in the application (or, “Application Models”). The approach that we took had similarities with the concept of Desire Lines from landscape architecture, as described in <a href="http://www.amazon.co.uk/Practices-Scaling-Lean-Agile-Development/dp/0321636406"><em>Practices for Scaling Lean and Agile Development</em> by Larman and Vodde</a>. 
+<!--break-->
+A desire line (or desire path) is a path that evolves over time, as a result of people walking or cycling from where they are to where they want to be, and usually represents the shortest (or easiest) route between those points. These desire paths provide a key indication of the routes people take to reach a destination, and many desire paths become fully managed “official” paths, upgraded to gravel or tarmac. A good example from Cambridge is the green open space called Parker’s Piece<a href="#footnote-asterisk"><sup>*</sup></a>. Bounded on all sides by roads, it has two main paths, running roughly North-South and East-West<a href="#footnote-dagger"><sup>†</sup></a>:</p>
+
+<p><a href="http://codebork.com/content/parkers-piece-sketchmap"><img src="http://codebork.com/sites/default/files/Parkers%20Piece.png" alt="Parkers Piece" width="690" /></a></p>
+
+<p>Even the briefest of glances at that deliberately rough sketch map provides a clear idea of where the points of interest lie outside of Parker’s Piece. In the top corners, we have obstacles – to the left, the public toilets; to the right, the University Arms hotel – and in the bottom left corner, we have objects of desire: the gym and swimming pool, a skate park, and a pedestrian crossing. I find it interesting that not only do desire paths represent the shortest or easiest path to an object of desire, but that they also represent the shortest path around an obstacle.</p>
+
+<p><strong>Ok, ok, but how does this apply to software architecture?</strong></p>
+
+<p>Well, the overall concept of desire lines has similarities with both the “outside-in” development approach described by books such as <a href="http://www.growing-object-oriented-software.com/"><em>Growing Object-Oriented Software, Guided by Tests</em></a> and the Lean and Agile principles of a <a href="http://theleanstartup.com/principles">minimum viable product (MVP)</a> and incremental development. The MVP can be considered the diagonal paths in the sketch above, the basic routes from one side of the grass to the other; the desire lines represent the incremental development, added as and when they become needed – for example, I gather the skate park didn’t exist in the 16th century when Parker’s Piece was first established!</p>
+
+<p>A more concrete example is in communication between disparate systems. Remember in the opening paragraph, I mentioned the HTML UI communicates with the product’s engine via JSON? In this sort of scenario, you can start with a minimum viable data contract and add to it as more of the application is built. Or to put it another way, working from the outside in, you let the consumer define the data format and, as you build this consumer, so you build the data format (this applies to behaviour as much as data, of course, but that’s another blog post.) Taking the ubiquitous to-do list app example, you might build up your data contract as follows:</p>
+
+<p><a href="http://codebork.com/content/mvp-phases"><img src="http://codebork.com/sites/default/files/MVP%20phases.png" width="690" /></a></p>
+
+<p>An alternative approach, which we took on this project for reasons of practicality, is to provide a very loose data contract and then refine it as you build. This roughly translates to throwing everything and the kitchen sink over the wire for every request, and then refactoring the data contracts as you build the client. We took this approach in our project because the HTTP endpoints were developed independently of the user interface up front, and that team didn’t know at the time what the UI would need. They developed a proof-of-concept UI along the way which consumed this data, and the production-quality UI is refactoring those data contracts along the way. In honesty, I wouldn’t recommend taking this approach unless your hands are tied, as it’s analogous to refactoring a God Object. To stretch the desire lines metaphor to the point of breaking, it’s a bit like covering the proposed green space with gravel and grass seed, and letting the grass grow through the gravel where people don’t walk, then scooping up the gravel in those areas and properly turfing them. Basically, a massive faff, and one that is likely to produce less well-defined results than the true desire lines approach.</p>
+
+<p>I’ve had a few musings around the MVP concept over the last few weeks, and this latest addition was sufficiently interesting to share. Certainly I will be keeping it in mind in the coming weeks and months as we start on new development work.</p>
+
+<p><span id="footnote-asterisk" style="font-size: x-small"><sup>*</sup>Factoid: Parker’s Piece is considered <a href="http://www.bbc.co.uk/cambridgeshire/content/articles/2006/06/09/cambridge_football_rules_parkers_piece_feature.shtml">the birthplace of the rules of Association Football</a>!</span><br />
+<span id="footnote-dagger" style="font-size: x-small"><sup>†</sup>The elaborate lamppost at the crossing in the middle is known as “the Reality Checkpoint”</span></p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Desire Lines in software architecture: what can... - http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2015/01/16/desire-lines-software-architecture-what-can-we-learn-landscape-architecture.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

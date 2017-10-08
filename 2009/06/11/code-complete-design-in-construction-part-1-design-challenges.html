@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Code Complete: Design in Construction (Part 1 - Design Challenges)</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Code Complete: Design in Construction (Part 1 - Design Challenges)">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2009/06/11/code-complete-design-in-construction-part-1-design-challenges.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2009/06/11/code-complete-design-in-construction-part-1-design-challenges.html">
+  <meta name="twitter:title" content="Code Complete: Design in Construction (Part 1 - Design Challenges)">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Code Complete: Design in Construction (Part 1 - Design Challenges)</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                June 11, 2009
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>McConnell states that design links the requirements phase to coding and debugging: it is an intermediary representation of real-world issues and concepts.  As such, good design is always useful, but often it is indispensible; this is particularly true with the ever-increasing level of complexity in computer software.</p>
+
+<p>McConnell believes that design is a good example of a “wicked” problem, which Rittel and Webber (1973) describe thus:</p>
+<blockquote>
+"One that could be clearly defined only by solving it, or by solving part of it"
+</blockquote>
+<p>The upshot of this is that you have to “solve” the problem once in order to clearly define it.  You then go ahead and solve it again — and you do so better this time, given your better understanding of the problem — which results in a better problem definition.  This implies that design is an heuristic process, and possibly inherently iterative also.</p>
+
+<p>McConnell identifies the <a href="http://en.wikipedia.org/wiki/Tacoma_Narrows_Bridge_(1940)" title="Wikipedia article on the Tacoma Narrows Bridge collapse in 1940">Tacoma Narrows Bridge collapse in 1940</a> as a real-world example of a wicked problem.  A more up-to-date example that is arguably more relevant to my readership is that of <a href="http://en.wikipedia.org/wiki/London_Millennium_Bridge" title="Wikipedia article on the London Millennium Bridge">London’s Millennium Bridge</a>: just three days after it was opened, the Millennium Bridge had to be closed because it wobbled.  The wobble arose from “unexpected lateral vibration” created by the pedestrians using the bridge; whilst bridges are designed to account for resonance caused by vertical loads, it was not known until the structure was completed that the problem of lateral vibration would need to be taken into consideration too.  It was particularly problematic at opening, because of the popularity of the structure: it was carrying up 2,000 people at any one moment, vastly increasing the amplitude of the lateral vibrations.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[img_assist</td>
+      <td>nid=98</td>
+      <td>title=London’s Millennium Bridge</td>
+      <td>desc=View from the Tate Modern gallery</td>
+      <td>link=none</td>
+      <td>align=center</td>
+      <td>width=600</td>
+      <td>height=438]</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>This is, by and large, something from which University courses will shelter you: if the requirements for a piece of coursework were to change constantly, the lecturer wouldn’t be able to effectively assess your solutions.  The “wickedness” of the design problem is therefore vastly reduced for course assignments.</p>
+
+<p>McConnell also explains that even though design produces a tidy result, it is implicitly a sloppy process.  As you work towards a design, you will inevitably make a lot of mistakes and be led up a number of blind alleys.  This is, however, the whole point of the design process, and it is much safer to make those mistakes here than when you have already got code seared into the architecture.  Corollary: it is much harder to know when your design is “good enough”, and it can sometimes be difficult to stop tinkering.  The Agile principle of YAGNI (You Ain’t Gonna Need It) provides a useful counterbalance to this instinct.</p>
+
+<p>Design is all about trade-offs and priorities.  You will have to reach a compromise over competing design characteristics.  We recently had this scenario at work: there were two different approaches to solving one particular design problem, one that focussed on performance and one that might damage performance to an unknown degree but resulted in cleaner and more maintainable code.  The argument against the former was that it was premature optimisation; the argument for it was that performance is a key quality metric of our component and so we should not introduce anything that would damage that.</p>
+
+<p>Design invariably involves restrictions, and sometimes deliberate constraints are required.  One of the clearest signals that your design is not suitably constrained is the notion of “feature creep”, where new requirements and features are added to the design on an on-going basis.  This invariably endangers projects, and can sometimes kill them altogether.</p>
+
+<p>Design is a non-deterministic process, in that there is no single right answer: there is always more than one way to skin a cat.  It is also an emergent process, in that it doesn’t spring, fully-formed, from someone’s brain.  The best way to achieve a good design is to do so iteratively, as if you were drafting a story, a blog post, or some other bit of written communication: produce multiple drafts.  Turn the wickedness of the problem to your advantage: solve it once, take what you learned from the process and solution and then solve it again, better.  Lather; rinse; repeat as needed.</p>
+
+<hr />
+
+<h3>References</h3>
+<p>Rittel, H. and Webber, M. (1973) “Dilemmas in a General Theory of Planning.” <i>Policy Sciences</i> <b>4</b> 155-69</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Code Complete: Design in Construction (Part 1 -... - http://codebork.com/2009/06/11/code-complete-design-in-construction-part-1-design-challenges.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2009/06/11/code-complete-design-in-construction-part-1-design-challenges.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2009/06/11/code-complete-design-in-construction-part-1-design-challenges.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

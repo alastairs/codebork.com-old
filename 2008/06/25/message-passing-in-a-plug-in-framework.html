@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Message Passing in a Plug-in Framework</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Message Passing in a Plug-in Framework">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/06/25/message-passing-in-a-plug-in-framework.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/06/25/message-passing-in-a-plug-in-framework.html">
+  <meta name="twitter:title" content="Message Passing in a Plug-in Framework">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Message Passing in a Plug-in Framework</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                June 25, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I’ve been running a couple of coding projects at home over the last couple of months, one of which is a personal finance program.  I’ve used this as an experiment in new technologies (mainly .Net 3.0/3.5 stuff, including LINQ and WPF/XAML), as well as one in architecture and design patterns.  The program is based around a plug-in architecture and the time has come to consider message-passing between plug-ins; for example, I need non-storage plug-ins to inform storage plug-ins when their data has changed, and what data has changed, so that the storage plug-ins can schedule these changes for serialisation to their storage format (be it an SQLite database, an XML file, or whatever).
+<!--break-->
+The plug-in framework enables the loading of different classes of plug-ins, each with their own interface; for example, there is a class of plug-in for accounts, one for reports, two for file type support (import and export), etc.  The framework provides the environment for loading and interacting with plug-ins, the necessary interfaces etc. for coding plug-ins against, managing of preferences and logging, etc., etc., etc., ad nauseam.  It is a mediator and arbitrator between the plug-ins which provide the real meat of the application.</p>
+
+<p>The project has now got to the point where I need to be able to pass messages around the framework, between plug-ins.  The immediate solution that sprung to mind was the classic publish/subscribe model, so I duly looked into the <a href="http://www.wikipedia.org/wiki/Observer_Pattern" title="Wikipedia article on the Observer design pattern">Observer pattern</a>, a manual implementation of publish/subscribe.  This feels wrong in that it doesn’t seem to provide a way for plug-ins to register new notification types (e.g., BeforeDataChange =&gt; “if you need to do something before you update your data, now is your chance”) under defined categories of events, let alone define new categories.  Solution #1 scrapped.</p>
+
+<p>I thought I’d cracked it with my next possible solution, the Blackboard pattern, which is based around the idea of cops solving a crime; the policemen post different bits of information and evidence on a central blackboard and infer further information in the form of links and relationships between the items.  This approach has historically been used to great effect in AI systems, such as OCR, speech recognition, etc., but didn’t feel quite right for this scenario.  However, I didn’t like the idea of posting up all these changes for the entire application to see, when the message was intended for a particular set of recipients.  Solution #2 scrapped.</p>
+
+<p>So I revisited publish/subscribe, this time with .Net events.  A .Net event is just a special case of the .Net idea of a delegate, or callback, method; it is an analogue to a function pointer for those of you in the C++ world, although it has to be said that this metaphor quickly breaks down as delegates also have an object representation that makes the more than just pointers.  They give you multi-casting for free, as callback methods are assigned to delegates using the “+=” operator, building a list of methods invoked by calling the delegate.  I thought maybe I could leverage the object-ness of delegates to implement categories via inheritance, but it turned out this wasn’t possible (probably A Good Thing™).</p>
+
+<p>Events don’t seem to play nicely with my proposed model of using a broker class to mediate the publications and subscriptions.  The broker should store a list of published actions, and plug-ins should be able to retrieve the list of published actions in order to subscribe to a subset of them.  I may need to go down the path of a custom solution (such as porting the Message Manager from my fourth-year project), which is not very <abbr title="Don't Repeat Yourself">DRY</abbr>, but should give me a greater level of decoupling in the architecture than I think an events-based model will give me.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Message Passing in a Plug-in Framework - http://codebork.com/2008/06/25/message-passing-in-a-plug-in-framework.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/06/25/message-passing-in-a-plug-in-framework.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/06/25/message-passing-in-a-plug-in-framework.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

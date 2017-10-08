@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Test-Driving a Leap Year Calculator</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Test-Driving a Leap Year Calculator">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/08/14/test-driving-a-leap-year-calculator.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/08/14/test-driving-a-leap-year-calculator.html">
+  <meta name="twitter:title" content="Test-Driving a Leap Year Calculator">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Test-Driving a Leap Year Calculator</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                August 14, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  4 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>In preparation for <a href="http://codebork.com/2011/08/14/camdugs-first-ever-dojo.html">CAMDUG’s first ever Dojo</a> yesterday, I worked through the Leap Year kata, which I had intended to run in the first session, “Introduction to TDD”.  I ended up swapping it out for the Roman Numerals kata, because I got through two iterations of the exercise in about 20 minutes.  However, I thought it would be useful to share the problem and my approaches to it with my readers.<br />
+<!--break-->
+The Problem
+========</p>
+
+<p>Like many kata, the problem is simply stated:</p>
+
+<blockquote>
+  <p>Write a function that returns true or false depending on whether its input integer is a leap
+year or not.  A leap year is defined as one that is divisible by 4, but is not otherwise divisible by 
+100 unless it is also divisible by 400.</p>
+
+  <p>For example, 2001 is a typical common year and 1996 is a typical leap year, whereas 1900 is an
+atypical common year and 2000 is an atypical leap year.</p>
+</blockquote>
+
+<h1 id="first-iteration">First iteration</h1>
+
+<p>For my first iteration, I took an approach that I think is akin to Acceptance Test-Driven Development (ATDD).  That is to say, I took the four example years from the problem statement above and used them as my acceptance cases.  If all four acceptance tests pass, the system could be considered complete.</p>
+
+<p>[gist:1145099:acceptance_tests.cs]</p>
+
+<p>[gist:1145099:implementation.cs]</p>
+
+<p>I was left a bit uneasy with this approach, however: it seemed too easy, and I was only testing the examples given.  How did I know that, for example, 1984 would be considered a leap year and 1985 wouldn’t?  What happens if -1984 is provided to the method?  What about 0, and other test cases I haven’t even considered yet?</p>
+
+<h1 id="second-iteration">Second iteration</h1>
+
+<p>I then deleted my first attempt; this is an important step when doing many iterations of a kata as it helps you to clear your mind of the details of previous solutions and look at the problem anew.  I tackled the problem with my more usual form of TDD in the second iteration, which is to say I wrote tests to exercise the method contract rather than fit the provided examples.</p>
+
+<p>My first test exercises the most basic rule of a leap year: if it is divisible by 4, then it is a leap year:</p>
+
+<p>[gist:1145103:FirstTest.cs]</p>
+
+<p>I went with the TDD approach of writing the simplest possible code to make the test pass:</p>
+
+<p>[gist:1145103:FirstImpl.cs]</p>
+
+<p>My second test exercises the inverse condition: if the year is not divisible by 4, then it is not a leap year:</p>
+
+<p>[gist:1145103:SecondTest.cs]</p>
+
+<p>And again, the simplest possible code to get this to pass is:</p>
+
+<p>[gist:1145103:SecondImpl.cs]</p>
+
+<p>I jumped a bit ahead with my third test, and ended up breaking my flow: I wrote a passing test.  That’s a bad thing to do, because it means you have to really think hard about whether or not it is passing <em>for the right reason</em>.  If they’re passing for the wrong reason and you leave it be, you’re likely to run into problems later.</p>
+
+<p>[gist:1145103:ThirdTest.cs]</p>
+
+<p>Because this test passes, there’s no implementation step.</p>
+
+<p>Instead of writing a test for the situation where the year is divisible by 400, I should have written a test for the situation where the year is divisible by 100, which should return false:</p>
+
+<p>[gist:1145103:FourthTest.cs]</p>
+
+<p>And there is an associated implementation to write for this test:</p>
+
+<p>[gist:1145103:FourthImpl.cs]</p>
+
+<p>Aha!  Now test 3 fails.  It is hopefully now made clear why I should have written these last two tests the other way around: tests should only start to fail when you break something, which I have not done here.  Anyway, I’m now in the situation I would have been in if I had written the third and fourth tests the other way around, and I can write the implementation for the third test:</p>
+
+<p>[gist:1145103:ThirdImpl.cs]</p>
+
+<p>An integral part of the TDD workflow is refactoring: the rhythm that should be adopted is “Red, Green, Refactor”.  My chosen refactoring was to pull out the small amount of logic testing whether a year was divisible by 100 into a new method called <code class="highlighter-rouge">IsCentury()</code>:</p>
+
+<p>[gist:1145103:Refactor.cs]</p>
+
+<p>At this point I decided to stop, but there are more refactorings to do (e.g., the code checking whether the year is divisible by 400, and perhaps the one for years divisible by 4 as well).  I felt more comfortable with this approach because I was testing the general rules rather than the specific examples.  I felt comfortable with the idea of extending this test suite and implementation to handle some of the edge cases (negative numbers, etc) I mentioned above.  I think the code for the second iteration is a fair bit cleaner than the first, even though there’s only a couple of small refactorings between them.</p>
+
+<p>I’m interested to read feedback on both these approaches: am I missing something with ATDD?  Is my usual TDD approach flawed?  Am I refactoring early enough in my workflow?</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Test-Driving a Leap Year Calculator - http://codebork.com/2011/08/14/test-driving-a-leap-year-calculator.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/08/14/test-driving-a-leap-year-calculator.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/08/14/test-driving-a-leap-year-calculator.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

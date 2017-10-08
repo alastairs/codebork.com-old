@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Casting types in .NET</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Casting types in .NET">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2009/01/24/casting-types-in-net.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2009/01/24/casting-types-in-net.html">
+  <meta name="twitter:title" content="Casting types in .NET">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Casting types in .NET</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                January 24, 2009
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>In Java, there’s only one way to explicitly cast a variable from one type to another, and that’s using the bracket syntax.  In .NET (well, C# anyway), there are a couple: the Java-esque bracket syntax and the <code language="csharp">as</code> keyword.  Whilst I have used both frequently in the past, a situation occurred a couple of days ago where I realised I needed to clarify what <code language="csharp">as</code> did under the hood.
+<!--break-->
+I was working through the Java examples of <a href="http://www.alastairsmith.me.uk/coding/2008/09/13/test-driven-development.html" title="Test-Driven Development"><em>Test-Driven Development by Example</em></a> in C# using the MSTest framework included with Visual Studio 2008 when I came across some funny polymorphism and casting that seemed valid in the example but wouldn’t compile in C#.  It later transpired that I’d missed a step in the super-class, but as I tried the two different methods of casting, I realised they were different and I wasn’t sure how.</p>
+
+<p>In C#, the explicit cast bracket syntax is identical to that in Java:</p>
+<div style="float: left; width: 50%;">
+<strong>Java</strong>
+<blockcode language="java">
+char x = 'x';
+int y = (int) x; 
+</blockcode>
+</div>
+<div>
+<strong>C#</strong>
+<blockcode language="csharp">
+char x = 'x';
+int y = (int) x;
+</blockcode>
+</div>
+
+<p>Under the hood, this also works the same way as it does in Java: it attempts to cast the one type to the other, and throws an exception if the types are not compatible.</p>
+
+<p>Both languages also support implicit casting, which allows you to do things like:</p>
+<blockcode language="csharp">
+int x = 10;
+long y = x;
+</blockcode>
+
+<p>C# also provides an <code language="csharp">as</code> keyword for reference types; it won’t work on value types like int, double, etc.  This is a second form of explicit casting, and it is used as follows:</p>
+<blockcode language="csharp">
+Superclass superclass = new Superclass();
+Subclass obj = superclass as Subclass;
+</blockcode>
+
+<p>This is a nifty trick, providing a form of checked casting.  What happens when you use the <code language="csharp">as</code> keyword is that the type is cast as before, but if the cast to <code language="csharp">Subclass</code> fails, <code language="csharp">obj</code> is set to <code language="csharp">null</code>.  Under the hood, this is what happens:</p>
+<blockcode language="csharp">
+expression is type ? (type)expression : (type)null
+</blockcode>
+<p>(where <code language="csharp">is</code> is C#’s equivalent of Java’s <code language="java">instanceof</code>).  Note that in this example <code language="csharp">expression</code> is only evaluated one for the entire statement.</p>
+
+<p>This is rather basic C# stuff, but sometimes you get a situation where it helps to remind yourself what’s going on behind the high-level constructs.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Casting types in .NET - http://codebork.com/2009/01/24/casting-types-in-net.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2009/01/24/casting-types-in-net.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2009/01/24/casting-types-in-net.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Git: Rescuing changes that have been merged over</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Git: Rescuing changes that have been merged over">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/11/07/git-rescuing-changes-that-have-been-merged-over.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/11/07/git-rescuing-changes-that-have-been-merged-over.html">
+  <meta name="twitter:title" content="Git: Rescuing changes that have been merged over">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Git: Rescuing changes that have been merged over</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                November 7, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>So we ran into a little bit of bother with some pull requests to <a href="http://www.givecrm.org.uk/">GiveCRM</a>: I had submitted a feature that had been merged in, but it was subsequently lost (in part) when a later pull request was merged in.  It seems the submitter of the later pull request hadn’t updated from the central repository before submitting his pull request, so when his pull request was merged my feature was overwritten.</p>
+
+<p>My experience with Git is almost entirely as an individual developer, so I’m learning how to use it in a distributed team as we go with GiveCRM.  I turned to my friend, colleague and resident Git expert <a href="http://www.twitter.com/adamwood80">Adam Wood</a> for some advice.</p>
+
+<!--break-->
+
+<p>This is what the graph of commits looked like</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>             o----------------o----------
+            /                            \
+-----+--+--+-------+------------------+-+-+----
+                    \                  /
+                     x-------x--x-x-x--
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">+</code>s are master; the <code class="highlighter-rouge">x</code>s are my feature’s branch, and the <code class="highlighter-rouge">o</code>s are the other branch.</p>
+
+<p>I wondered initially if it might be resolvable by taking a branch at the point at which I finished my feature and rebasing that on master, but this didn’t work, as might be expected.  We tried a few other things, like revert and reset –soft, but eventually we worked out we could do the following, which was rather simpler.  The following commands are what I did; there’s probably a quicker/easier way to do some of them.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout 12345abc
+</code></pre>
+</div>
+
+<p>This puts you in “detached HEAD” mode at the given commit. This basically means, as far as I can tell, that the repository contents are at the specified commit, but you can’t make any changes to the repository and expect to keep them: git’s internal reference tracking is sort of “turned off”.  (Hopefully someone can explain that better than me!)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b FeatureRescue
+</code></pre>
+</div>
+
+<p>This creates a branch from the current detached HEAD state of the repository.  There’s probably a <code class="highlighter-rouge">git branch FeatureRescue 12345abc</code> that I could have done instead, but whatever.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b integration
+</code></pre>
+</div>
+
+<p>Create an integration branch to mess around in - you don’t want to lose the branch you’ve created where the feature is still intact!</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git merge abcdef123
+</code></pre>
+</div>
+
+<p>Merge the commit(s) that overwrote the feature.  I was lucky that the pull request only contained one commit.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git mergetool
+</code></pre>
+</div>
+
+<p>Fix up the merge conflicts that should have arisen when the pull request was merged in…</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git commit -m "Re-apply [x] change"
+</code></pre>
+</div>
+
+<p>Commit the merge to the integration branch.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout master
+git merge integration
+</code></pre>
+</div>
+
+<p>Switch back to master, and merge in the integration branch.  Sorted!</p>
+
+<p>Not <em>quite</em>.  I ran into the unfortunate situation where there was another file that was correctly updated in the integration branch, but didn’t get merged into master at the end.  This, I think, was because the file was not changed on master after my initial pull request.  I had to apply this change manually, but that was thankfully trivial.</p>
+
+<p>If you know a simpler way to accomplish this, please leave me a comment!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Git: Rescuing changes that have been merged over - http://codebork.com/2011/11/07/git-rescuing-changes-that-have-been-merged-over.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/11/07/git-rescuing-changes-that-have-been-merged-over.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/11/07/git-rescuing-changes-that-have-been-merged-over.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Introducing Bob</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Introducing Bob">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2014/03/23/introducing-bob.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2014/03/23/introducing-bob.html">
+  <meta name="twitter:title" content="Introducing Bob">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Introducing Bob</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                March 23, 2014
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  6 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <h2 id="tldr">TL;DR</h2>
+
+<p>Test Data Builders are awesome and you should use them to tidy up your test code (read about them in GOOS Chapter 22). I’m introducing a new library called <a href="http://github.com/alastairs/BobTheBuilder">Bob</a> which replaces the need to write your own hand-rolled Test Data Builders with a generic solution that preserves the fluent syntax suggested by GOOS.</p>
+
+<h2 id="test-data-builders">Test Data Builders</h2>
+
+<p>One of the most influential books on software development practice in recent years is <em>Growing Object Oriented Software, Guided by Tests</em>, or GOOS for short. It describes an approach to application development based on Test-Driven Development, but demonstrates how to effectively use Mocks, Stubs and Fakes to drive your application’s design from the outside and model it around the communications between collaborators, rather than stored state.</p>
+
+<p>A key recommendation GOOS makes for keeping your test code clean is to use a technique called Test Data Builders (Chapter 22, p257). This approach leans on the Builder pattern from the Gang of Four (GoF) to abstract away the construction of objects on which your tests depend, but do not necessarily care about. For example, say you are developing an online shop, which models customers and orders. You might write your tests like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Fact]
+public void Placing_An_Order_Adds_The_Order_To_The_Customers_Account()
+{
+    // Arrange
+    var customer = new Customer(1, // Id
+                                "Joe", "Bloggs", // Name
+                                "10 City Road", "Staines", "Middlesex", "AB1 2CD" // Address
+                                );
+    var order = new Order(1, customer);
+
+    // Act, Assert: not interesting for this example
+}
+</code></pre>
+</div>
+
+<p>After a while and a couple of tests, you realise you’ve got some duplicated code that you could factor out, so you introduce a couple of factory methods. Maybe you even include default parameter values to allow you to reuse the same factory method:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Fact]
+public void Placing_An_Order_Adds_The_Order_To_The_Customers_Account()
+{
+    // Arrange
+    var customer = CreateCustomer();
+    var order = new Order(1, customer);
+
+    // ...
+}
+
+private Customer CreateCustomer(int id = 1,
+                                string givenName = "Joe",
+                                string familyName = "Bloggs",
+                                string addressLine1 = "10 City Road",
+                                string addressLine2 = "Staines",
+                                string county = "Middlesex",
+                                string postCode = "AB1 2CD") 
+{
+    return new Customer(id, givenName, familyName, addressLine1, AddressLine2, county, postCode);
+}
+
+private Order CreateOrder(Customer customer, int id = 1)
+{
+    return new Order(id, customer);
+}
+</code></pre>
+</div>
+
+<p>But time goes on, and you find this approach isn’t really working for you either. Perhaps you have somehow ended up with three versions of <code class="highlighter-rouge">CreateCustomer()</code> that take different dependencies, or some abstraction is leaking all over your tests in spite of your best efforts. This is where the Test Data Builder pattern comes in.</p>
+
+<p>The Test Data Builder pattern is really just an implementation of the Builder pattern from GoF. This is a creational pattern, like the more common Factory Method and Abstract Factory patterns, and while it is more complicated than either factory pattern, it provides more flexibility too. It achieves this by separating the construction of the object from the object’s representation. As defined in GoF, it is a fairly complex pattern, but GOOS simplifies it somewhat.</p>
+
+<p>We start by defining a Builder class for the type we need to construct, which defines a Build() method returning the type we need:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>internal class CustomerBuilder
+{
+    public Customer Build()
+    {
+        return new Customer(1, // Id
+                            "Joe", "Bloggs", // Name
+                            "10 City Road", "Staines", "Middlesex", "AB1 2CD" // Address
+                                );
+    }
+}
+</code></pre>
+</div>
+
+<p>So far, so uninteresting. Next we start adding methods to define how we want the built <code class="highlighter-rouge">Customer</code> to look:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>internal class CustomerBuilder
+{
+    private string givenName;
+    private string familyName;
+
+    public CustomerBuilder WithGivenName(string newGivenName)
+    {
+        givenName = newGivenName;
+        return this;
+    }
+
+    public CustomerBuilder WithFamilyName(string newFamilyName)
+    {
+        familyName = newFamilyName;
+        return this;
+    }
+
+    public Customer Build()
+    {
+        return new Customer(1, // Id
+                            givenName, familyName
+                            "10 City Road", "Staines", "Middlesex", "AB1 2CD" // Address
+                            );
+
+    }
+}
+</code></pre>
+</div>
+
+<p>There are two things to notice from the above code sample. First, we get to remove those pesky comments because the code now better reveals its intent: it is self-documenting, which is the dream.</p>
+
+<p>The second thing to notice is the builder methods return the current instance of <code class="highlighter-rouge">CustomerBuilder</code>. This allows us to chain calls to the builder methods together to form a nice fluent interface:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Fact]
+public void Placing_An_Order_Adds_The_Order_To_The_Customers_Account()
+{
+    // Arrange
+    var customer = new CustomerBuilder()
+                           .WithGivenName("Joe")
+                           .WithFamilyName("Bloggs")
+                           .Build();
+    var order = new Order(1, customer);
+
+    // ...
+}
+</code></pre>
+</div>
+
+<p>Much nicer! This can be combined with a Factory Method in your test fixture to create the <code class="highlighter-rouge">CustomerBuilder</code>, which can make the code fully fluent:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Fact]
+public void Placing_An_Order_Adds_The_Order_To_The_Customers_Account()
+{
+    // Arrange
+    var customer = ACustomer()
+                       .WithGivenName("Joe")
+                       .WithFamilyName("Bloggs")
+                       .Build();
+    // ...
+}
+
+private CustomerBuilder ACustomer()
+{
+    return new CustomerBuilder();
+}
+</code></pre>
+</div>
+
+<p>Furthermore, you can add methods to your Builder along the lines of <code class="highlighter-rouge">WithNoFamilyName()</code> to make explicit situations where that part of the object should not be set. For example an Address object will have optional information such as <code class="highlighter-rouge">AddressLine2</code>, or you may wish to test what happens when no post code is provided as part of the address.</p>
+
+<p><a href="http://blog.ploeh.dk/">Mark Seemann</a> proposed a couple of extensions to the original GOOS Test Data Builder, which are quite nice. The first is to use the constructor of the Builder to define any default values that must be provided to the object being built. The second is to define an implicit cast from the Builder to the built type, to eliminate the noise of explicitly calling <code class="highlighter-rouge">Build()</code> all over the place:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>internal class CustomerBuilder
+{
+    // ...
+
+    public static implicit operator Customer(CustomerBuilder builder)
+    {
+        return builder.Build();
+    }
+}
+</code></pre>
+</div>
+
+<h2 id="introducing-bob">Introducing Bob</h2>
+
+<p>I’ve been writing Test Data Builders for a good number of months now, and as useful as the pattern is I find myself feeling frustrated at the amount of boilerplate code it demands: the builder methods in particular are quite annoying as they are so similar. I started off by trying to reduce the amount of typing I had to do by using <a href="http://www.jetbrains.com/resharper">ReSharper</a> templates to stub out the different facets of the pattern such as the builder class, the builder methods, etc., but then I moved jobs and lost them all. I haven’t yet got around to reproducing the templates in my new dev environment.</p>
+
+<p>Then a couple of days ago I had an idea. <a href="http://github.com/markrendle/Simple.Data">Simple.Data</a> uses the Dynamic Language Runtime and the dynamic dispatch features of C# to offer methods  that represent columns in your database tables (e.g. <code class="highlighter-rouge">pets.FindById(256);</code>, <code class="highlighter-rouge">pets.FindByType("Dog");</code>, etc.). Perhaps the Test Data Builder pattern implementation can be generalised using the techniques?</p>
+
+<p>I spent today spiking a new library to do this, <a href="http://github.com/alastairs/BobTheBuilder">Bob</a>. You use it like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Fact]
+public void Placing_An_Order_Adds_The_Order_To_The_Customers_Account()
+{
+    // Arrange
+    var customer = A.BuilderFor&lt;Customer&gt;()
+                       .WithGivenName("Joe")
+                       .WithFamilyName("Bloggs")
+                       .Build();
+    // ...
+}
+</code></pre>
+</div>
+
+<p>It also implements Mark’s second extension to the pattern, whereby you can implicitly cast from the Builder returned by <code class="highlighter-rouge">BuilderFor&lt;T&gt;()</code> to <code class="highlighter-rouge">T</code> and have it invoke the <code class="highlighter-rouge">Build()</code> method to complete the conversion.</p>
+
+<p>It is, admittedly pretty limited in functionality at the moment because it’s a proof of concept. It will only build instances of types that have a default (i.e. parameterless) constructor and that provide public setters on properties for the things that are to be set. I will build out the functionality as I need it, and <a href="https://github.com/alastairs/BobTheBuilder/#task-list">I have published a Task list</a> of immediately-forthcoming functionality.</p>
+
+<p>Check it out and let me know what you think!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Introducing Bob - http://codebork.com/2014/03/23/introducing-bob.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2014/03/23/introducing-bob.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2014/03/23/introducing-bob.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

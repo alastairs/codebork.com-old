@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Updates to Bob, v0.2 released!</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Updates to Bob, v0.2 released!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html">
+  <meta name="twitter:title" content="Updates to Bob, v0.2 released!">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Updates to Bob, v0.2 released!</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                April 12, 2014
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>Recently <a href="http://codebork.com/2014/03/23/introducing-bob.html">I introduced a new library</a> to aid testing in C#, <a href="https://github.com/alastairs/bobthebuilder">Bob</a>. I’ve made a couple of updates to it recently, one small, and one a bit larger. The latest release tackles a few robustness issues and sees it move out of alpha phase and up to version 0.2!</p>
+
+<h1 id="support-for-complex-types">Support for Complex Types</h1>
+
+<p>The first new feature is support for complex types with parameterless constructors. You can now say <code class="highlighter-rouge">A.BuilderFor&lt;Customer&gt;().WithAddress(new Address())</code>, for example. As it turned out, Bob already supported this as, of course, types with parameterless constructors are easily constructed by the reflection API. There are now tests around this use case, however, so you can be sure it will continue to work!</p>
+
+<h1 id="support-for-named-arguments-syntax">Support for Named Arguments syntax</h1>
+
+<p>The second new feature is a little larger: supporting a different syntax taking advantage of C# 4’s support for named arguments. You can now say <code class="highlighter-rouge">A.BuilderFor&lt;Customer&gt;().With(customerId: 43)</code>, for example, and you can supply multiple properties to the same call, such as</p>
+
+<pre>
+A.BuilderFor&lt;Customer&gt;()
+    .With(customerId: 43,
+          givenName: "John",
+          familyName: "Doe"
+    ).Build();
+</pre>
+
+<p>This might be useful if you have a set of properties that always travel together (and so might help you identify where a new class could be introduced).</p>
+
+<p>As before, you can skip the call to <code class="highlighter-rouge">Build()</code> if the compiler can work out that you’re after an instance of the built type.</p>
+
+<h1 id="robustness">Robustness</h1>
+
+<p>I’ve done a bit of redesign which threw up some places where the library wouldn’t work quite as intended (e.g., see what happens if you call a builder method that doesn’t start with the word ‘With’). I now have a design I’m happier with, and have ironed out these peculiarities of functionality, and now feel that it should be more solid than previously. As such, I’m very happy to announce that I’ve removed the “alpha” tag from the package version and have bumped it to v0.2!</p>
+
+<h1 id="get-bob-v02">Get Bob v0.2</h1>
+
+<p>All of these changes are available from NuGet in the 0.2 version of the package, just <code class="highlighter-rouge">install-package BobTheBuilder</code>!</p>
+
+<p>Happy building!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Updates to Bob, v0.2 released! - http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2014/04/12/updates-to-bob-v0-2-released.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

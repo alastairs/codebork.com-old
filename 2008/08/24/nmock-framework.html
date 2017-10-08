@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | NMock Framework</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="NMock Framework">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/08/24/nmock-framework.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/08/24/nmock-framework.html">
+  <meta name="twitter:title" content="NMock Framework">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>NMock Framework</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                August 24, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>To aid the testing of my personal finance program, I’ve been making heavy use of the <a href="http://www.nmock.org/">NMock</a> mocking framework for .NET.  This is a cool utility that allows you replace actual code calls with mock code calls, factoring out a lot of complexity of setting up some tests.  For example, I first started using it to mock the <a href="http://logging.apache.org/log4net/" title="Apache log4net">log4net</a> logging framework rather than creating a new logger for each test/suite and passing that around.  More recently, I’ve found it useful in mocking parts of the plug-in framework that are required by the code but not part of the test (such as the preferences’ manager, for example).
+<!--break-->
+By way of example, here’s set-up method from one of my plug-ins’ test suite:</p>
+<blockcode lang="csharp">
+public void SetUp()
+{
+    mocks = new Mockery();
+    logger = mocks.NewMock<ILog>();
+    pluginFramework = mocks.NewMock<IFramework>();
+
+    prefsManager = new PreferencesManager();
+    Expect.Exactly(4).On(logger).Method("Info");
+    prefsManager.Initialise(logger, prefsFile, prefsFile);
+
+    Expect.Once.On(logger).Method("Info");
+    pluginBroker = new PluginBroker(logger, pluginFramework);
+    Expect.Once.On(logger).Method("Info");
+    Expect.Once.On(logger).Method("InfoFormat");
+    Expect.Exactly(2).On(pluginFramework).GetProperty("PreferencesManager").Will(Return.Value(prefsManager));
+    pluginBroker.Initialise(pluginDir);
+
+    Expect.Once.On(logger).Method("Info");
+    messageBroker = new MessageBroker();
+    messageBroker.Initialise(logger);
+
+    Expect.AtLeastOnce.On(pluginFramework).GetProperty("MessageBroker").Will(Return.Value(messageBroker));
+    Expect.AtLeastOnce.On(pluginFramework).GetProperty("PluginBroker").Will(Return.Value(pluginBroker));
+    Expect.AtLeastOnce.On(pluginFramework).GetProperty("PreferencesManager").Will(Return.Value(prefsManager));
+}
+&lt;/blockcode&gt;
+
+The NMock statements are those that start <code>Expect.Number_Of_Times.On(mock_object)</code>.  As you can see, the statements read very much like English, which I think is one of the strengths of the framework.  <strong>You can immediately tell what the expectation of this object is without having to think around the syntax of the framework</strong>.  Note too the heavy use of interfaces: NMock can only mock interfaces, which I think is another strength of the framework.  This focus on interfaces really drives to you programming via interfaces, which is a key part of designing by contract.
+
+So what does this code do?  First of all, it creates a <code>Mockery</code> object, which is essentially a factory object for mock objects.  Next, a mock logger and mock plug-in framework object are created.  A real <code>PreferencesManager</code> is created, and we tell NMock that we expect exactly 4 calls to logger.Info in the <code>Initialise</code> method of <code>PreferencesManager</code>.  The same is done for a <code>PluginBroker</code> and its <code>Initialise</code> method.  Notice here that we're specifying too that the property <code>PluginBroker.PreferencesManager</code> will return a specific value, i.e., the <code>PreferencesManager</code> created earlier.  A <code>MessageBroker</code> is then created in the same way.  Finally, we state that we expect the properties <code>MessageBroker</code>, <code>PluginBroker</code> and <code>PreferencesManager</code> on <code>pluginFramework</code> will return the concrete objects already created.  
+
+At the end of each test, which may contain further expectations of our mocked objects, we can run <code>Mockery.VerifyAllExpectationsHaveBeenMet()</code>, which does exactly what it says on tin (a victory for clear over concise method naming!).  Note, however, that this is an instance method and not a static one, so you'll need to call it on the <code>Mockery</code> object created at the beginning.  
+
+NMock has a certain amount of flexibility in its interface.  For example, you can replace <code>Expect.x</code> with <code>Stub</code>, which is equivalent to <code>Expect.AtLeast(0)</code>.  There is also a raft of quantifiers for expectations in addition to <code>Once</code> and <code>AtLeast(x)</code>, such as <code>Between(x, y)</code> and <code>Never</code>.  
+
+The downside of NMock is that your expectations end up littered with strings referencing parts of the API.  If a mocked part of the API changes, you have to update these so-called "magic" strings with the appropriate new values; it also enforces a certain amount of trial and error when initially testing your expectations.  A framework like <a href="http://www.ayende.com/projects/rhino-mocks.aspx">Rhino Mocks</a> will use the compiler to tell you when you've messed up by allowing you to reference the mocked properties on the mock object directly, e.g.:
+<blockcode lang="csharp">
+IFramework pluginFramework; // Create stub framework object via Rhino Mocks
+IPreferencesManager prefsMan; // Create and initialise preferences' manager as above
+pluginFramework.PreferencesManager = prefsMan;
+</blockcode>
+
+This is obviously more concise than the NMock equivalent, listed in the last line of the first code block.
+
+Mocking frameworks are a very useful addition to the unit testing toolkit that allow you to abstract away some of the complexities of setting up unit tests.  They can also be used to test that an interface correctly obeys its contract.  Testing the contract should not, however, be confused with exercising the actual code in the implementation.  If you haven't already investigated mocks, why not look at incorporating one such framework into your next project's unit tests?
+</IFramework></ILog></blockcode>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=NMock Framework - http://codebork.com/2008/08/24/nmock-framework.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/08/24/nmock-framework.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/08/24/nmock-framework.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

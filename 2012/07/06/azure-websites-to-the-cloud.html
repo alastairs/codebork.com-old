@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Azure Websites: To the Cloud!</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Azure Websites: To the Cloud!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2012/07/06/azure-websites-to-the-cloud.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2012/07/06/azure-websites-to-the-cloud.html">
+  <meta name="twitter:title" content="Azure Websites: To the Cloud!">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Azure Websites: To the Cloud!</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                July 6, 2012
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>When <a href="http://www.twitter.com/scottgu">Scott Guthrie</a> and team unveiled the new Windows Azure updates back at the beginning of June, one of the most trumpeted features was the new Azure Websites feature, which brings to the Azure platform a service provided by <a href="http://www.appharbor.com/">AppHarbor</a> and <a href="http://www.heroku.com/">Heroku</a> (for the Rubyists): simple hosting of websites on a cloud platform.  One of the killer features of these platforms, and now Azure Websites, is simple deployment to the cloud via git push.  AppHarbor in particular does a good job of this in the .NET space, building your project and running the tests before deciding whether or not to deploy that commit.  They have some serious competition from Azure now, though.</p>
+
+<!--break-->
+
+<p>I’m using Azure Websites to develop (and, ultimately, host) the new <a href="http://www.cambridgegraduateorchestra.com/">Cambridge Graduate Orchestra</a> website, and have so far found the experience impressive.  Whilst I’m familiar with Git-based deployment from previous usages of both AppHarbor and Heroku, I’m pleased to see Microsoft actively supporting more open-source tools and technologies in its products and services.  Whilst the Azure Websites service is not as mature as AppHarbor’s offering, the combination with other Azure features, such as the Azure Service Bus and the new Infrastructure-as-a-Service bits, makes it a compelling option.</p>
+
+<p>The first thing you’ll need to do is log in to (or sign up for) a free trial of Azure.  Once you’ve logged in, go to the Azure Portal; if you get the old grey portal, look for and click the link to the new preview portal at the very bottom of the screen.</p>
+
+<p>Next create a new Azure Website. Click new:</p>
+
+<p><img src="http://codebork.com/sites/default/files/Create%20Website.png" alt="The new Windows Azure Portal, illustrating how to create a new Azure Website" title="Create a new Azure Website" height="540" /></p>
+
+<p>After you hit “Create Web Site”, you’ll see the new website appear in the list as configuring; it will say “Running” when it is ready for use, and you’ll see a green tick next to it (like the CGO site in the above screenshot).</p>
+
+<p>Next, click the site to be taken to its dashboard.  This is where you can view all sorts of metrics about your site, including requests, storage, CPU time and more.  Click the link that says “Set up Git publishing”:</p>
+
+<p><img src="http://codebork.com/sites/default/files/Dashboard.png" alt="The new Windows Azure Portal, illustrating where to click to set up Git publishing." title="Set up Git publishing" height="540" /></p>
+
+<p>This will prompt you for a username and password to use for connecting to Azure via Git.  This is created on a <em>per-account basis, not on a per-site basis</em>, so you only need to do this once.  You’ll then get a Git URL with some instructions on how to use it:</p>
+
+<p><img src="http://codebork.com/sites/default/files/Git%20instructions.png" alt="The new Windows Azure Portal, illustrating the instructions provided to help you set up your local Git repository for publishing to Azure." title="Git instructions for publishing" height="540" /></p>
+
+<p>Add a new remote to your existing Git repository, and run <code class="highlighter-rouge">git push azure master</code>. Simplez.  At the moment, only the master branch is supported for deployment; if you are using a different branching convention, you will receive an informational message stating this.</p>
+
+<p>The <strong>really nice thing</strong> about this is that after Azure builds your pushed repository, it will generate an MSDeploy package from it, and run a deployment using that package.  That means you can take advantage of all the nice things, like configuration file transforms, that you get with MSDeploy.</p>
+
+<p>I’m really impressed with the job Microsoft has done here, and look forward to delving more into this in the coming weeks.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Azure Websites: To the Cloud! - http://codebork.com/2012/07/06/azure-websites-to-the-cloud.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2012/07/06/azure-websites-to-the-cloud.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2012/07/06/azure-websites-to-the-cloud.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

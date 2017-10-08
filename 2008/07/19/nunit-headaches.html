@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | NUnit Headaches</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="NUnit Headaches">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/07/19/nunit-headaches.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/07/19/nunit-headaches.html">
+  <meta name="twitter:title" content="NUnit Headaches">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>NUnit Headaches</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                July 19, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>So my promised updates on other things haven’t quite come to fruition…  This week’s been kinda busy.</p>
+
+<p>But this evening I sat down with NAnt and NUnit to try and get my Unit Tests working under NUnit and running from the automated NAnt build, and, six hours later, I’m still here.</p>
+
+<p>[img_assist|nid=21|title=|desc=|link=none|align=center|width=427|height=640]
+<!--break-->
+The first headache was trying to get the <nunit2> task in NAnt to work with my tests.  NAnt ships with NUnit 2.2.8, whereas I've been using the <em>much</em> more up-to-date 2.4.7 version.  Very early, I ran into the dreaded "could not load file or assembly" error, and looking again at the docs for the <a href="http://nant.sourceforge.net/release/0.86-beta1/help/tasks/nunit2.html" title="&lt;nunit2&gt; task">&lt;nunit2&gt; NAnt task</a> I discovered I needed to redirect the assembly bindings via a test.config file, but it took me a <strong>very</strong> long time to work out that I'd got my oldVersion and newVersion the wrong way round :-(</nunit2></p>
+<blockcode language="xml">
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <runtime>
+        <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+            <dependentAssembly>
+                <assemblyIdentity name="nunit.framework" publicKeyToken="96d09a1eb7f44a77" culture="Neutral" /> 
+                <bindingRedirect oldVersion="2.2.8.0" newVersion="2.4.7.0" /> 
+            </dependentAssembly>
+        </assemblyBinding>
+    </runtime>
+</configuration>
+</blockcode>
+
+<p>Line 7 should actually read:</p>
+<blockcode language="xml">
+                <bindingRedirect oldVersion="2.4.7.0" newVersion="2.2.8.0" /> 
+</blockcode>
+<p>so that my 2.4.7-bound tests can be run with the 2.2.8 binaries provided with NAnt.  Something in <a href="http://www.hanselman.com/blog/CommentView.aspx?guid=a9e7d7d7-027c-44de-b873-4d6c6e3255b2" title="Calling NUnit from NAnt Pragmatically">Scott Hanselman’s post on the subject</a> helped me grasp this fact in a flash of inspiration.</p>
+
+<p>However, Scott recommends invoking nunit-console.exe with the &lt;exec&gt; task — a more generic call-an-external-program sort of task.  For example,</p>
+<blockcode language="xml">
+<exec program="path\to\nunit-console.exe">					
+    <arg value="My.Tests.dll" />
+    <arg value="/xml=results\My.Tests.xml" />
+    <arg value="/nologo" />
+</exec>
+</blockcode>
+
+<p>Unfortunately, I’m back to square one with this method.  Running nunit-console.exe directly from the command line gives me the exact same “could not load file or assembly” error that I was suffering earlier, and, unsurprisingly, I get the same results through my NAnt build:</p>
+<blockcode>
+NUnit version 2.4.7
+Copyright (C) 2002-2007 Charlie Poole.
+Copyright (C) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov.
+Copyright (C) 2000-2002 Philip Craig.
+All Rights Reserved.
+
+Runtime Environment -
+   OS Version: Microsoft Windows NT 5.1.2600 Service Pack 2
+  CLR Version: 2.0.50727.1433 ( Net 2.0.50727.1433 )
+
+Could not load file or assembly 'nunit.framework, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77' or
+one of its dependencies. The system cannot find the file specified.
+</blockcode>
+
+<p>Note there that <strong>NUnit version 2.4.7 is unable to load the nunit.framework assembly at version 2.4.7</strong>.  I’ve trashed my test.config file, so I’m not doing any assembly re-binding any more, and NUnit is housed within it’s own directory in my working copy.  Goodness only knows what’s going on here — maybe I’ll find out tomorrow…</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=NUnit Headaches - http://codebork.com/2008/07/19/nunit-headaches.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/07/19/nunit-headaches.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/07/19/nunit-headaches.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

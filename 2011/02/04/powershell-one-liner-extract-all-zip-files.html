@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | PowerShell one-liner: extract all zip files</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="PowerShell one-liner: extract all zip files">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/02/04/powershell-one-liner-extract-all-zip-files.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/02/04/powershell-one-liner-extract-all-zip-files.html">
+  <meta name="twitter:title" content="PowerShell one-liner: extract all zip files">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>PowerShell one-liner: extract all zip files</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                February 4, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  1 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I’m a big fan of <a href="http://www.tekpub.com/" title="TekPub - High-quality screencasts for programmers.">TekPub</a> and its thorough video tutorials on a wide range of development topics from frameworks like ASP.NET MVC and Ruby on Rails to building apps for the various mobile devices, to their free series such as key development concepts.</p>
+
+<p>The videos are streamed from the TekPub website, or, if you buy an individual series or an annual subscription, you can download the videos to keep.  The downloads are zipped-up video files (.wmv or .mp4), and so each file needs to be extracted before it can be watched.  When I download the zip files, I like organise them into a folder per series, under a top-level TekPub folder, something like the following:</p>
+<pre>
+  + TekPub
+  |  + ASP.NET MVC 2
+  |  |  Episode 1.zip
+  |  |  Episode 2.zip
+  |  + Ruby on Rails 3
+  |  |  Episode 1.zip
+  |  |  Episode 2.zip
+  |  |  Episode 3.zip
+
+  ...etc.
+</pre>
+
+<p>Expanding and then deleting each zip file is a dull manual process, so like any good developer, I chose to automate it.  Here’s a PowerShell one-liner to expand and then delete all the archives found in this sort of shallow directory structure.  It wouldn’t be too difficult to convert it to a fully-recursive process, so I leave that as an exercise for the reader :-)</p>
+
+<script src="https://gist.github.com/748258.js?file=Expand-AllArchives"></script>
+
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=PowerShell one-liner: extract all zip files - http://codebork.com/2011/02/04/powershell-one-liner-extract-all-zip-files.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/02/04/powershell-one-liner-extract-all-zip-files.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/02/04/powershell-one-liner-extract-all-zip-files.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

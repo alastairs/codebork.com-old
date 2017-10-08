@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | Starting out with RavenDB</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Starting out with RavenDB">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2012/07/29/starting-out-with-ravendb.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2012/07/29/starting-out-with-ravendb.html">
+  <meta name="twitter:title" content="Starting out with RavenDB">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>Starting out with RavenDB</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                July 29, 2012
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>A while back, I volunteered to re-do the <a href="http://www.cambridgegraduateorchestra.com/">Cambridge Graduate Orchestra</a>’s website, to bring it up to date with the latest web techniques.  To provide persistence, I opted for <a href="http://www.ravendb.net/">RavenDB</a>, a “second-generation document database”, as I had heard how good it was for rapid development and what a nice API it has.  These are my initial thoughts having wired it into my existing solution.</p>
+
+<!--break-->
+
+<p>First off, RavenDB does have a very nice .NET API indeed.  I’m using it in embedded mode, which means nothing more than pulling down a different package off NuGet, and swapping out the instantiation of the standard <code class="highlighter-rouge">DocumentStore</code> class for an <code class="highlighter-rouge">EmbeddableDocumentStore</code> instance.  I also opted to customise the data storage directory.  The simplicity with which a connection can be made to Raven is best expressed through a sample:</p>
+
+<p>[gist:3198273:Instantiate and initialise an EmbeddableDocumentStore.cs]</p>
+
+<p>Once a document store has been initialised, you can then create sessions to talk to Raven.  Raven’s session implementation follows the <a href="http://www.martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work pattern</a> defined by Martin Fowler in his book Patterns of Enterprise Application Architecture.  This means that, within a session, the database is guaranteed to be consistent, and it is not until you call <code class="highlighter-rouge">SaveAllChanges()</code> at the end of your unit of work (if required) that the database is updated.  Again, working with Raven’s session is trivial:</p>
+
+<p>[gist:3198273:Complete a unit of work.cs]</p>
+
+<p>So, the API is a joy to work with, and Raven’s document model means you just don’t have to worry about the database at all: you just throw your objects at Raven’s API and they’re persisted as-is.  There’s none of that <a href="https://en.wikipedia.org/wiki/Object-relational_impedance_mismatch">Object-Relational impedance mismatch</a> to get in the way.</p>
+
+<p>I do have one criticism of Raven so far, though.  Looking at the advice provided on <a href="http://ravendb.net/kb/3/using-ravendb-in-an-asp-net-mvc-website">using Raven in an ASP.NET MVC app</a>, we see a tight coupling of Raven to the controller: sessions are instantiated when an Action is executed by the MVC framework, and closed when the Action has finished being exectued.  Also take into account <a href="http://ayende.com/blog/3955/repository-is-the-new-singleton">Ayende’s scorn</a> for the <a href="http://www.martinfowler.com/eaaCatalog/repository.html">Repository pattern</a>, and the fact that trying to apply such a pattern with RavenDB <a href="http://novuscraft.com/blog/ravendb-and-the-repository-pattern">tends to cause more pain than that which it tries to solve</a>. This leaves us in a very difficult place from a unit testing perspective.</p>
+
+<p><a href="http://orangelightning.co.uk/">Phil Jones</a> <a href="http://ravendb.net/kb/31/my-10-tips-and-tricks-with-ravendb">suggests</a> <em>not</em> abstracting RavenDB for unit testing purposes, and that</p>
+
+<blockquote>
+  <p>Purists will argue these “unit tests” become “integration tests”. I’ve not been bothered by “slowness”.</p>
+</blockquote>
+
+<p>I guess I am a “purist”, then :-)  I agree that using an embedded in-memory database makes for some very fast integration tests, but <em>they are still integration tests</em>.  The point of unit testing is to be able to test a single unit of functionality <strong>in isolation of the rest of the system</strong>; Raven does not (easily) allow you to accomplish this.  The official advice, described above, ties the lifetime of Raven’s session to that of the MVC framework, which means that the session object is not available from within a unit test without providing specific hooks in for the tests (a major no-no).</p>
+
+<p>A nicer alternative is to inject the <code class="highlighter-rouge">IDocumentStore</code>, or, better still, the <code class="highlighter-rouge">IDocumentSession</code> into the controller via its constructor, but this still couples the controller to Raven.  Both the <code class="highlighter-rouge">IDocumentStore</code> and the <code class="highlighter-rouge">IDocumentSession</code> can be cleanly configured using an IoC container provided it supports singleton and per-web request lifetime scopes.  Unfortunately, using this approach, and the unit testing best-practice of only mocking types that you own, you are left with an integration test: <em>you have to inject a real Raven object into the controllers</em>.</p>
+
+<p>The way to get around this - usually - is to wrap the third-party library in an abstraction.  In this particular situation, however, I will lose, or have to duplicate, much of the implementation of the Raven API to achieve this.  It seems a shame to have to sacrifice some of my hard-earned principles of good software development at this point to make use of such a great library and technology.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=Starting out with RavenDB - http://codebork.com/2012/07/29/starting-out-with-ravendb.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2012/07/29/starting-out-with-ravendb.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2012/07/29/starting-out-with-ravendb.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

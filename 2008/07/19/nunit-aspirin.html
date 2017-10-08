@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | NUnit Aspirin</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="NUnit Aspirin">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/07/19/nunit-aspirin.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/07/19/nunit-aspirin.html">
+  <meta name="twitter:title" content="NUnit Aspirin">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>NUnit Aspirin</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                July 19, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I finally resolved my NUnit headaches.  Turns out the aspirin I needed to was to <abbr title="Read the Fucking Manual">RTFM</abbr> and continue to <a href="http://blog.jpboodhoo.com/AutomatingYourBuildsWithNAntPart5.aspx" title="Automating your builds with NAnt &mdash; Part 5">the next step of Jean-Paul Boodhoo’s guide to NAnt</a>.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[img_assist</td>
+      <td>nid=24</td>
+      <td>title=</td>
+      <td>desc=</td>
+      <td>link=url</td>
+      <td>url=http://en.wikipedia.org/wiki/Aspirin</td>
+      <td>align=center</td>
+      <td>width=500</td>
+      <td>height=400]</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Had I done this before, I would have realised that in order to get NUnit working in the manner I wished, I needed to copy the NUnit DLLs either to the <abbr title="Global Assembly Cache">GAC</abbr> or to the build staging area so that they resided in the same directory as my Unit Tests’ DLL.  The latter is the preferred method.  I would also have learned that I needed to copy any other dependent assemblies, such as <a href="http://logging.apache.org/log4net/index.html" title="Apache log4net">log4net</a> and <a href="http://www.nmock.org/" title="NMock">NMock</a> as part of the build process.
+<!--break-->
+So why is it necessary to copy these DLLs to the same directory?  Because whilst the .NET dependency resolution is fairly bright (the GAC is pretty cool), it’s not all <em>that</em> bright, and most developers don’t both extending its behaviour.  I guess it’s not really worth the bother.</p>
+
+<p>What would be more useful, however, is for the compile-time reference information to be shoved into the .NET assembly, so that it can try that location before any others (it could additionally resolve the relative path provided at compile to an absolute path and so try both options).  I guess, however, that most build environments don’t reflect the final production environment post-install, so maybe that’s why this functionality isn’t there.</p>
+
+<p>As I mentioned before, this option is preferred over installing NUnit to the GAC.  This is because this would tie me to the installed version of NUnit.  If I upgraded my tools depot to NUnit 2.5, and built my unit tests with NUnit 2.5, I’d have to go messing around with <a href="http://www.alastairsmith.me.uk/coding/2008/07/19/nunit-headaches.html" title="NUnit Headaches">that assembly redirection/rebinding I mentioned in my previous post</a>.  Either that, or upgrade NUnit in the GAC too.  This way, I have more independence in choosing the version of NUnit I use and flexibility in using it, which is the exact same reason I dropped the use of the <nunit2> task in my build files.</nunit2></p>
+
+<p>Maybe now I can get on with unit testing my Message Manager!  :-)</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=NUnit Aspirin - http://codebork.com/2008/07/19/nunit-aspirin.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/07/19/nunit-aspirin.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/07/19/nunit-aspirin.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

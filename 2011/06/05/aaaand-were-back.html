@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | ...aaaand we're back.</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="...aaaand we're back.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2011/06/05/aaaand-were-back.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2011/06/05/aaaand-were-back.html">
+  <meta name="twitter:title" content="...aaaand we're back.">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>...aaaand we're back.</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                June 5, 2011
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>Well, you might have noticed a change of look around here. Over the weekend, I upgraded this blog to Drupal 7, which was released a couple of months ago.</p>
+
+<!--break-->
+
+<p>It seems that sometime in the last year Drupal also made the move to Git.  This, I hope, will vastly improve the update and third-party add on story; indeed, I am trying out the following plan:</p>
+
+<ol>
+  <li>Check out the latest Drupal source (7.x branch) from http://git.drupal.org/project/drupal.git (<a href="http://drupal.org/node/3060/git-instructions/7.x">Drupal-specific instructions</a>).</li>
+  <li>Check out each module as a Git submodule.  E.g., for the Views module, the appropriate incantation would be (from your Drupal installation directory) <code class="highlighter-rouge">git submodule add http://git.drupal.org/project/views.git sites/all/modules/views -b 7.x-1.x</code>.</li>
+</ol>
+
+<p>I think this should allow me to keep my Drupal installation up-to-date automatically just by running <code class="highlighter-rouge">git pull</code> and <code class="highlighter-rouge">git submodule update</code> every so often.  I won’t be able to verify this until a module or Drupal core update is released, though.</p>
+
+<p>Drupal 7’s emphasis on improving usability over new features has yielded good results.  It’s much easier to find the things I’m looking for in the admin interface; there’s a new shortcut menu that sits at the top of the page, and the admin tasks overlay the site itself.  Some sections have been collapsed into a single tabbed section.</p>
+
+<p>The theme I was using for my blog previously (<a href="http://drupal.org/project/ad_the-morning-after">AD The Morning After</a>) hasn’t yet been ported to Drupal 7, so for the moment I’m running the new default theme Bartik.  I’ve been playing around with the <a href="http://drupal.org/project/omega">Omega</a> theme as well, which provides a base for building HTML5 and CSS3 themes.  There are a couple of themes built on top of Omega (notably <a href="http://drupal.org/project/beta">Beta</a> and <a href="http://drupal.org/project/gamma">Gamma</a>)</p>
+
+<p>I’ve also installed the <a href="http://daringfireball.net/projects/markdown/">Markdown</a> <a href="http://drupal.org/project/markdown">module</a> because I was fed up with editing HTML manually.  I’ve set this as the default input format, so you can take advantage of this when leaving comments too.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=...aaaand we're back. - http://codebork.com/2011/06/05/aaaand-were-back.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2011/06/05/aaaand-were-back.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2011/06/05/aaaand-were-back.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

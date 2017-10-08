@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | An Evaluation of Web Frameworks II.ii: Status Report</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="An Evaluation of Web Frameworks II.ii: Status Report">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2009/01/07/an-evaluation-of-web-frameworks-ii-ii-status-report.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2009/01/07/an-evaluation-of-web-frameworks-ii-ii-status-report.html">
+  <meta name="twitter:title" content="An Evaluation of Web Frameworks II.ii: Status Report">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>An Evaluation of Web Frameworks II.ii: Status Report</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                January 7, 2009
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>It’s been a little while since I made any progress on this little project of mine, due to the <a href="http://www.alastairsmith.me.uk/random-stuff/2009/01/03/downtime.html" title="Downtime">downtime</a> I suffered throughout December.  I couldn’t get access to my virtual machine server, so I wasn’t able to restart the VM hosting my blog and my Subversion repositories; everything went down together.</p>
+
+<p>As such, it’s probably time for an update on where I’ve got to so far.
+<!--break-->
+I spent a fair bit of time getting the repository and the project set up correctly, including much shifting around of stuff, playing around with <a href="http://www.alastairsmith.me.uk/coding/2008/11/22/escaping-svnexternals.html">svn:externals</a>, setting up <a href="http://ccnet.thoughtworks.com/" title="CruiseControl.NET Homepage">CruiseControl.NET</a> for automated builds and testing, pulling out some of the default guff from the ASP.NET MVC project (and, of course, working out what was needed and what wasn’t), etc., etc., etc., ad nauseam.  Over and above all that, however, I have spent some time defining my models.  I have classes representing Posts, Comments and Users, and I’ve made a start on my Controllers too.  The controllers house most of the logic, and so are the most complicated part to develop.</p>
+
+<p>I have already discovered, for example, through the few automated tests I already have, that I need to factor out my database logic into supporting code.  The tests for saving a post run fine on my development machine, but fail on my build server.  A bit of <a href="http://www.alastairsmith.me.uk/coding/2008/09/13/test-driven-development.html" title="Test-Driven Development">TDD</a>, partnered nicely with <a href="http://www.alastairsmith.me.uk/coding/2008/08/24/nmock-framework.html" title="NMock Framework">NMock</a> should (hopefully!) give me a decent data access layer that I can later mock again using NMock in my unit tests for the Controllers.  I also need to get myself more into the TDD mindset of writing the tests first and then writing the code to fix the tests.</p>
+
+<p>Discipline is everything when practising a new methodology.  Hopefully I’ll have another post for this series in a few days or so.  We’ll see!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=An Evaluation of Web Frameworks II.ii: Status R... - http://codebork.com/2009/01/07/an-evaluation-of-web-frameworks-ii-ii-status-report.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2009/01/07/an-evaluation-of-web-frameworks-ii-ii-status-report.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2009/01/07/an-evaluation-of-web-frameworks-ii-ii-status-report.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

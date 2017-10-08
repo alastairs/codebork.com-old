@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | More on Message Passing!</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="More on Message Passing!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/09/08/more-on-message-passing.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/09/08/more-on-message-passing.html">
+  <meta name="twitter:title" content="More on Message Passing!">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>More on Message Passing!</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                September 8, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  3 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I recently posted a question to <a href="http://www.stackoverflow.com/" title="Stack Overflow">Stack Overflow</a>.  This is a great developer community site run by <a href="http://www.codinghorror.com" title="Coding Horror">Jeff Atwood</a> and <a href="http://www.joelonsoftware.com" title="Joel on Software">Joel Spolsky</a> that’s currently in private <a href="http://beta.stackoverflow.com" title="Stackoverflow Beta">beta</a>.  It’s a good mixture of discussion forum, <a href="http://www.digg.com">Digg</a>-style ratings’ site, and wiki that promises to become a truly invaluable resource once development is complete; it’s well on its way already!  The idea is that ordinary developers post questions and the community responds, with both questions and answers being voted upon by the community.</p>
+
+<p>I’ve included my question below to gain the issue a bit of extra exposure.  If you have a stackoverflow.com account, please visit <a href="http://beta.stackoverflow.com/questions/50822/message-passing-in-a-plug-in-framework-problem" title="Message Passing in a Plug-In Framework Problem">my question</a> and post a response there, or vote on the question and any existing answers.  Alternatively, please leave a comment on this post with your thoughts.
+<!--break--></p>
+<hr />
+<p>First off, there’s a bit of background to this issue available on my blog:</p>
+<ul>
+<li>http://www.alastairsmith.me.uk/coding/2008/06/25/message-passing-a-plug-framework.html</li>
+<li>http://www.alastairsmith.me.uk/coding/2008/07/31/message-passing-2.html</li>
+</ul>
+
+<p>I’m aware that the descriptions in those posts aren’t hugely clear, so I’ll try to summarise what I’m attempting as best I can here.  The application is a personal finance program.  Further background on the framework itself is available at the end of this post.</p>
+
+<p>There are a number of different types of plug-in that the framework can handle (e.g., accounts, export, reporting, etc.).  However, I’m focussing on one particular class of plug-in, so-called data plug-ins, as it is this class that is causing me problems.  I have one class of data plug-in for accounts, one for transactions, etc.</p>
+
+<p>I’m midway through a vast re-factoring that has left me with the following architecture for data plug-ins:</p>
+<ul>
+<li>The data plug-in object (implementing intialisation, installation and plug-in metadata) [implements <code>IDataPlugin<FactoryType>&lt;/code&gt;]  &lt;/li&gt;
+<li>The data object (such as an account) [implements, e.g., <code>IAccount</code>]  </li>
+<li>A factory to create instances of the data object [implements, e.g., <code>IAccountFactory</code>]</li>
+&lt;/ul&gt;
+Previously the data object and the plug-in object were combined into one, but this meant that a new transaction plug-in had to be instantiated for each transaction recorded in the account which caused a number of problems.  Unfortunately, that re-factoring has broken my message passing.  The data object implements <code>INotifyPropertyChanged</code>, and so I've hit a new problem, and one that I'm not sure how to work around: the plug-in object is registering events with the message broker, but it's the data objects that actually fires the events.  This means that <strong>the subscribing plug-in currently has to subscribe to each created account, transaction, etc.!</strong>  This is clearly not scalable.  
+
+As far as I can tell at the moment I have two possible solutions:
+<ol>
+<li>Make the data plug-in object a go-between for the data-objects and message broker, possibly batching change notifications.  I don't like this because it adds another layer of complexity to the messaging system that I feel I should be able to do without.   </li>
+<li>Junk the current event-based implementation and use something else that's more easily manageable (in-memory WCF?!)</li>
+</ol>
+So I guess I'm really asking: 
+<ol>
+<li>how would you solve this problem?</li>
+<li>what potential solutions do you think I've overlooked?</li>
+<li>is my approach even vaguely on-track/sensible?! :-)</li>
+</ol>
+Many thanks in advance for the time and effort you put into your responses.  As you will be able to tell from the dates of the blog posts, some variant of this problem has been taxing me for quite a long time now!  As such, any and all responses will be greatly appreciated.  
+
+The background to the framework itself is as follows:  
+<blockquote>My plug-in framework consists of three main components: a plug-in broker, a preferences' manager and a message broker.  The plug-in broker does the bread-and-butter plug-in stuff: discovering and creating plug-ins.  The preferences' manager manages user preferences for the framework and individual plug-ins, such as which plug-ins are enabled, where data should be saved, etc.  Communication is via publish/subscribe, with the message broker sitting in the middle, gathering all published message types and managing subscriptions.  The publish/subscribe is currently implemented via the .NET <code>INotifyPropertyChanged</code> interface, which provides one event called <code>PropertyChanged</code>; the message broker builds a list of all plug-ins implementing <code>INotifyPropertyChanged</code> and subscribes other plug-ins this event.  The purpose of the message passing is to allow the account and transaction plug-ins to notify the storage plug-ins that data has changed so that it may be saved.</blockquote>
+</FactoryType></code></li></ul>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=More on Message Passing! - http://codebork.com/2008/09/08/more-on-message-passing.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/09/08/more-on-message-passing.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/09/08/more-on-message-passing.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

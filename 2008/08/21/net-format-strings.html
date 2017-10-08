@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>CodeBork | .NET Format Strings</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content=".NET Format Strings">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://codebork.com/2008/08/21/net-format-strings.html">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="CodeBork">
+  <meta property="og:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="http://codebork.com/2008/08/21/net-format-strings.html">
+  <meta name="twitter:title" content=".NET Format Strings">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="http://codebork.com/assets/og-image.jpg">
+
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link href="http://codebork.comfeed.xml" type="application/rss+xml" rel="alternate" title="CodeBork Last 10 blog posts" />
+
+  
+    <link type="text/css" rel="stylesheet" href="/assets/light.css">
+  
+</head>
+
+<body>
+  <main role="main">
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav reveal">
+  <a href="/" class="header-logo" title="CodeBork">CodeBork</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="http://twitter.com/alastairs" target="_blank" title="Twitter">
+          <span class="icon icon-social-twitter"></span>
+        </a>
+      </li>
+    
+    
+    
+      <li>
+        <a href="alastairs" target="_blank" title="GitHub">
+          <span class="icon icon-social-github"></span>
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:codebork@alastairsmith.me.uk" target="_blank" title="Email">
+          <span class="icon icon-at"></span>
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" target="_blank" title="RSS">
+          <span class="icon icon-social-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article reveal">
+          <header class="article-header">
+            <h1>.NET Format Strings</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                August 21, 2008
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  2 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>.NET format strings rock.  These are roughly equivalent to the old-school C-style sprintf() functions, with their <code>%d</code>, etc., symbols.  There’s some serious power to these strings, however; think PHP’s date() function on acid, and for more than just dates.</p>
+
+<p>None of this is likely to be new to all but the greenest of .NET developers (like me), but it’s always worth reminding yourself of how great these things are.</p>
+
+<p>[img_assist|nid=36|title=|desc=|link=node|align=none|width=400|height=407]
+<!--break-->
+You can pass format strings to the ToString() method of any object; .NET has some built-in logic that will help decipher certain format string.  For example, parity with PHP’s date() function is achieved by passing a format string to the ToString() method on DateTime:</p>
+
+<blockcode language="csharp">
+Console.WriteLine(DateTime.Now.ToString("dd/MM/yy h:mm"));
+</blockcode>
+
+<p>outputs</p>
+
+<blockcode>20/08/08 6:40</blockcode>
+
+<p>So far, so PHP date().  The power of format strings comes in when used with the String.Format() method.  This is the bit that’s similar to the sprintf() class of functions in C, etc.  For example, we can insert a representation of an object into a string:</p>
+
+<blockcode language="csharp">
+Console.WriteLine(String.Format("Hello {0}", "world!"));
+</blockcode>
+
+<p>outputs the classic</p>
+
+<blockcode>Hello world!</blockcode>
+
+<p>The beauty of that <code>{0}</code> place-holder is that <em>it directly indexes the remaining parameters passed to String.Format()</em>.  So we can do things like</p>
+
+<blockcode language="csharp">
+Console.WriteLine(String.Format("This string was output at {3}:{4} on {0}/{1}/{2}",
+    DateTime.Now.ToString("dd"), DateTime.Now.ToString("MM"), 
+    DateTime.Now.ToString("yy"), DateTime.Now.ToString("hh"), 
+    DateTime.Now.ToString("mm"));    
+</blockcode>
+
+<p>It’s a somewhat-contrived example (unless you’re writing a logging system), but it illustrates the point.  It’s hugely more programmer-friendly than having to do ten or so string concatenations.  In addition, String.Format() handily accepts an array as its second parameter.  If you pass in an array (and no further parameters), the place-holders then index the array!</p>
+
+<p>The place-holders can include further formatting information, such as padding characters (e.g., leading zeros, ensuring currency figures are displayed to two decimal places, etc.).  The correct format here is as follows:</p>
+<blockcode lang="csharp">
+Console.WriteLine(String.Format("{0:00000}", 50));      //Outputs "00050"
+</blockcode>
+<p>The zero before the colon is the parameter indexer as before, and the bit after the colon is what does the actual formatting, padding the string with leading zeros.  Therefore, you can apply different formats to different parameters!</p>
+
+<p>The flexibility of the latter part of the format strings is impressive too; you can use special characters to specify different built-in representations, such as “C” for currency (automatically inserts the currency symbol for the current locale and uses parentheses for negative numbers), “P” for percent (automatically inserts the % character), “X” specifies hex formatting…  And then there are <em>custom</em> format strings!</p>
+
+<p>Kathy Kam at Microsoft published <a href="http://blogs.msdn.com/kathykam/archive/2006/03/29/564426.aspx" title=".NET Format String 101">an excellent summary of their capabilities</a> a couple of years ago that’s become my go-to reference for these things.  There’s also a <a href="http://blogs.msdn.com/kathykam/archive/2006/09/29/.NET-Format-String-102_3A00_-DateTime-Format-String.aspx" title=".NET Format String 102: DateTime Format String">follow-up post</a> describing further format strings specific to the DateTime type.  Check them out and see what other formatting wizardry you can accomplish!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            <a href="" title="Share on Twitter" onclick="window.open('https://twitter.com/home?status=.NET Format Strings - http://codebork.com/2008/08/21/net-format-strings.html by @alastairs', 'newwindow', 'width=500, height=225'); return false;">
+              <span class="icon icon-social-twitter"></span>
+            </a>
+            <a href="" title="Share on Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=http://codebork.com/2008/08/21/net-format-strings.html', 'newwindow', 'width=500, height=500'); return false;">
+              <span class="icon icon-social-facebook"></span>
+            </a>
+            <a href="" title="Share on Google+" onclick="window.open('https://plus.google.com/share?url=http://codebork.com/2008/08/21/net-format-strings.html', 'newwindow', 'width=550, height=400'); return false;">
+              <span class="icon icon-social-googleplus"></span>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer class="footer reveal">
+  <p>
+    Chalk is a high quality, completely customisable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" target="_blank" title="Download Chalk">here</a>.
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript" src="/assets/vendor.js"></script>
+<script type="text/javascript" src="/assets/application.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: ['Cormorant Garamond:700', 'Lato:300,400,700']
+    }
+  });
+</script>
+
+
+
+</body>
+</html>
